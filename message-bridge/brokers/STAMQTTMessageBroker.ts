@@ -13,15 +13,15 @@ export class STAMQTTMessageBroker implements TTNMessageBroker {
     this.mqttConnectionString = mqttConnectionString
   }
 
-  connect(): Promise<any> {
+  public connect(): Promise<any> {
     return Promise.resolve('connected :^I')
   }
 
-  createMessage(message: TTNMessage): Promise<STAMQTTMessage> {
-    return Promise.resolve(<STAMQTTMessage>message)
+  public createMessage(message: TTNMessage): Promise<STAMQTTMessage> {
+    return Promise.resolve(<STAMQTTMessage> message)
   }
 
-  submitMessage(message: STAMQTTMessage): Promise<BrokerResponse> {
-    return Promise.resolve(<BrokerResponse>{ status: 201, message: 'created' })
+  public submitMessage(message: STAMQTTMessage): Promise<BrokerResponse> {
+    return Promise.resolve(<BrokerResponse> { status: 201, message: 'created' })
   }
 }

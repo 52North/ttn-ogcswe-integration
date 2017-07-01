@@ -1,10 +1,10 @@
 import { readFileSync } from 'fs'
 import * as TTN from 'ttn'
 
-import { TTNMessageBroker, STAMQTTMessageBroker, BrokerResponse } from './brokers'
+import { BrokerResponse, STAMQTTMessageBroker, TTNMessageBroker } from './brokers'
 
 export const backends = {
-  STAMQTTMessageBroker
+  STAMQTTMessageBroker,
 }
 
 export class TTNMessageBridge {
@@ -20,8 +20,8 @@ export class TTNMessageBridge {
 
     // init ttn mqtt connection
     this.ttnClient = new TTN.data.MQTT(region, applicationID, accessToken, {
+      ca: readFileSync('../../mqtt-ca.pem'),
       protocol: 'mqtts',
-      ca: readFileSync('./mqtt-ca.pem')
     })
 
     // init backend broker
@@ -33,7 +33,7 @@ export class TTNMessageBridge {
         this.ttnClient.on('error', this.logger.error)
         this.ttnClient.on('message', this.handleMessage)
       })
-      .catch(err => {
+      .catch((err) => {
         this.logger.error(`unable to connect to backend broker: ${err}`)
       })
   }

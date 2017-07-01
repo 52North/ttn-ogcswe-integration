@@ -1,3 +1,5 @@
+/* tslint:disable interface-name */
+
 declare interface TTNMessage {
   readonly app_id: string
   readonly dev_id: string
@@ -14,10 +16,10 @@ declare interface TTNAuthOptions {
 
 declare interface TTN {
   data: {
-    MQTT: object
+    MQTT: object,
   }
 
   manager: {
-    HTTP: object
+    HTTP: object,
   }
 }

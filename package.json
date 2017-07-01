@@ -4,11 +4,12 @@
   "description": "TheThingsNetwork integration with OGC SensorWeb",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "env $(cat .env | grep -v ^# | xargs) node dist/index.js",
     "build": "rimraf dist && tsc -p .",
     "build:docker": "docker build -t noerw/ttn-ogcswe-integration .",
     "dev:dist": "yarn run build && node --inspect dist/index.js",
     "dev:src": "yarn run build && nodemon --watch src --exec yarn run dev:dist",
+    "lint": "tslint --fix '{{message-bridge,device-bridge,types}/**/,./}*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +25,8 @@
   "devDependencies": {
     "nodemon": "^1.11.0",
     "rimraf": "^2.6.1",
+    "tslint": "^5.4.3",
+    "tslint-consistent-codestyle": "^1.5.0",
     "typescript": "^2.4.1"
   },
   "dependencies": {
