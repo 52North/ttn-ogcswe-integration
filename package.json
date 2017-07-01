@@ -1,0 +1,32 @@
+{
+  "name": "ttn-ogcswe-integration",
+  "version": "1.0.0",
+  "description": "TheThingsNetwork integration with OGC SensorWeb",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "rimraf dist && tsc -p .",
+    "build:docker": "docker build -t noerw/ttn-ogcswe-integration .",
+    "dev:dist": "yarn run build && node --inspect dist/index.js",
+    "dev:src": "yarn run build && nodemon --watch src --exec yarn run dev:dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/noerw/ttn-ogcswe-integration.git"
+  },
+  "author": "Norwin Roosen <noerw@gmx.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noerw/ttn-ogcswe-integration/issues"
+  },
+  "homepage": "https://github.com/noerw/ttn-ogcswe-integration#readme",
+  "devDependencies": {
+    "nodemon": "^1.11.0",
+    "rimraf": "^2.6.1",
+    "typescript": "^2.4.1"
+  },
+  "dependencies": {
+    "ttn": "^2.1.1"
+  }
+}

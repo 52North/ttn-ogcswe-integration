@@ -1,0 +1,9 @@
+.git
+.gitignore
+Dockerfile
+LICENSE
+README.*
+.env*
+.DS_Store
+.vscode
+tsconfig.json
