@@ -1,7 +1,11 @@
-import { backends, TTNMessageBridge } from './message-bridge'
+import {
+  backends,
+  ITTNOptions,
+  TTNMessageBridge,
+} from './message-bridge'
 
 // TTN related settings
-const ttnOpts = <ITTNAuthOptions> {
+const ttnOpts = <ITTNOptions> {
   accessToken: process.env.TTN_APP_ACCESS_TOKEN,
   applicationID: process.env.TTN_APP_ID,
   region: process.env.TTN_REGION,

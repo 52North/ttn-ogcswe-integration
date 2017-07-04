@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs'
-import * as TTN from 'ttn'
+import { join } from 'path'
+import * as ttn from 'ttn'
 
 import {
   IBrokerResponse,
@@ -13,20 +14,30 @@ export const backends = {
   STAMQTTMessageBroker,
 }
 
+export interface ITTNOptions {
+  accessToken: string
+  applicationID: string
+  options?: {
+    ca: string,
+    protocol: 'mqtts'
+  }
+  region: string
+}
+
 export class TTNMessageBridge {
 
-  private readonly ttnClient: TTN
+  private readonly ttnClient: ttn.data.MQTT
   private readonly broker: ITTNMessageBroker
   private readonly logger: Console
 
-  constructor(ttnOptions: ITTNAuthOptions, broker: ITTNMessageBroker, logger?: Console) {
+  constructor(ttnOptions: ITTNOptions, broker: ITTNMessageBroker, logger?: Console) {
     const { region, applicationID, accessToken } = ttnOptions
 
     this.logger = logger || console
 
     // init ttn mqtt connection
-    this.ttnClient = new TTN.data.MQTT(region, applicationID, accessToken, {
-      ca: readFileSync('../../mqtt-ca.pem'),
+    this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken, {
+      ca: readFileSync(join(__dirname, '../../mqtt-ca.pem')),
       protocol: 'mqtts',
     })
 
@@ -44,7 +55,7 @@ export class TTNMessageBridge {
       })
   }
 
-  private handleMessage(deviceID: string, message: ITTNMessage) {
+  private handleMessage(deviceID: string, message: ttn.data.IUplinkMessage) {
     this.logger.log(`handling message for ${deviceID}`)
 
     return this.broker.createMessage(message)

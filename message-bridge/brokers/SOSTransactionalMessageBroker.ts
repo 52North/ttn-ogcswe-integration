@@ -1,4 +1,5 @@
 import * as request from 'request-promise-native'
+import * as ttn from 'ttn'
 
 import { IBrokerResponse, ITTNMessageBroker } from '.'
 
@@ -59,7 +60,7 @@ interface IObservation {
 
 // specialisation of TTNMessage with specific payload fields structure for this backend
 // then TTN application needs a payload function returning this format!
-interface ITTNMessageOM extends ITTNMessage {
+interface ITTNMessageOM extends ttn.data.IUplinkMessage {
   payload_fields: IMeasurementResult
 }
 

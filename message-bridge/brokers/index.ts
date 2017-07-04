@@ -1,3 +1,5 @@
+import * as ttn from 'ttn'
+
 // response format for any broker
 export interface IBrokerResponse {
   status: number
@@ -7,7 +9,7 @@ export interface IBrokerResponse {
 // interface to be implemented by any backend measurement broker
 export interface ITTNMessageBroker {
   connect(): Promise<any>
-  createMessage(message: ITTNMessage): Promise<any>
+  createMessage(message: ttn.data.IUplinkMessage): Promise<any>
   submitMessage(message: any): Promise<IBrokerResponse>
 }
 

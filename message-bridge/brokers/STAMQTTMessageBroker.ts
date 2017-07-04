@@ -1,3 +1,5 @@
+import * as ttn from 'ttn'
+
 import { IBrokerResponse, ITTNMessageBroker } from '.'
 
 // implements a broker against the SensorThings MQTT backend
@@ -17,7 +19,7 @@ export class STAMQTTMessageBroker implements ITTNMessageBroker {
     return Promise.resolve('connected :^I')
   }
 
-  public createMessage(message: ITTNMessage): Promise<ISTAMQTTMessage> {
+  public createMessage(message: ttn.data.IUplinkMessage): Promise<ISTAMQTTMessage> {
     return Promise.resolve(<ISTAMQTTMessage> message)
   }
 
