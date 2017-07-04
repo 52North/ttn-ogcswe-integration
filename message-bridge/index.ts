@@ -1,9 +1,15 @@
 import { readFileSync } from 'fs'
 import * as TTN from 'ttn'
 
-import { BrokerResponse, STAMQTTMessageBroker, TTNMessageBroker } from './brokers'
+import {
+  BrokerResponse,
+  SOSTransactionalMessageBroker,
+  STAMQTTMessageBroker,
+  TTNMessageBroker,
+} from './brokers'
 
 export const backends = {
+  SOSTransactionalMessageBroker,
   STAMQTTMessageBroker,
 }
 

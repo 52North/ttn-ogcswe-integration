@@ -30,6 +30,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
+    "request-promise-native": "^1.0.4",
     "ttn": "^2.1.1"
   }
 }

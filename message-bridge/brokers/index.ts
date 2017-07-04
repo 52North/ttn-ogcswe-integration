@@ -12,3 +12,4 @@ export interface TTNMessageBroker {
 }
 
 export * from './STAMQTTMessageBroker'
+export * from './SOSTransactionalMessageBroker'
