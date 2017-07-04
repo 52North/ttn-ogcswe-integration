@@ -1,13 +1,13 @@
 import * as request from 'request-promise-native'
 
-import { BrokerResponse, TTNMessageBroker } from '.'
+import { IBrokerResponse, ITTNMessageBroker } from '.'
 
 // implements a broker against the SOS Transactional Interface
 
 // reference: https://52north.github.io/sensor-web-tutorial/05_web-services.html#insertobservation
 // TODO: check out InsertResult in ResultHandlingExtension ( "This is useful, if the remaining metadata elements of an observation are equal" )
-interface SOSTransactionalMessage {
-  observation: Observation
+interface ISOSTransactionalMessage {
+  observation: IObservation
   offering: URI
   request: string
   service: string
@@ -17,12 +17,12 @@ interface SOSTransactionalMessage {
 type URI = string
 type ISODate = string
 
-interface CodedValue {
+interface ICodedValue {
   value: any
   codespace: URI
 }
 
-interface Geometry {
+interface IGeometry {
   type: string
   coordinates: number[]
   crs?: {
@@ -31,39 +31,39 @@ interface Geometry {
   }
 }
 
-interface FeatureOfInterest {
-  identifier: CodedValue
-  name?: CodedValue[]
+interface IFeatureOfInterest {
+  identifier: ICodedValue
+  name?: ICodedValue[]
   sampledFeature?: URI[]
-  geometry?: Geometry
+  geometry?: IGeometry
 }
 
-interface MeasurementResult {
+interface IMeasurementResult {
   uom?: string // ideally a UCUM value
   time?: ISODate
   value: number
 }
 
 // reference: https://52north.github.io/sensor-web-tutorial/04_o-and-m.html
-interface Observation {
-  identifier?: CodedValue
+interface IObservation {
+  identifier?: ICodedValue
   type: URI                 // always an O&M Measurement for our case
   procedure: URI            // represents the associated sensor
   observedProperty: URI     // the measured phenomenon
-  featureOfInterest: FeatureOfInterest // must be specified once completely, afterwards just `identifier`
+  featureOfInterest: IFeatureOfInterest // must be specified once completely, afterwards just `identifier`
   sampledFeature: URI[],
   phenomenonTime: ISODate   // time of measurement
   resultTime: ISODate       // time of publication
-  result: MeasurementResult // actual measurement value
+  result: IMeasurementResult // actual measurement value
 }
 
 // specialisation of TTNMessage with specific payload fields structure for this backend
 // then TTN application needs a payload function returning this format!
-interface TTNMessageOM extends TTNMessage {
-  payload_fields: MeasurementResult
+interface ITTNMessageOM extends ITTNMessage {
+  payload_fields: IMeasurementResult
 }
 
-interface Sensor {
+interface ISensor {
   // TODO: select a variable for mapping between ttn.dev_id and sensor...
   // TODO: where is this `offering` thingy?
   identifier: string
@@ -86,10 +86,10 @@ interface Sensor {
   procedureDescriptionFormat: URI[]
 }
 
-export class SOSTransactionalMessageBroker implements TTNMessageBroker {
+export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
   private readonly baseUrl: string
-  private sensorCache: Sensor[]
+  private sensorCache: ISensor[]
 
   constructor(sosHost: string) {
     // TODO: uri validation
@@ -100,19 +100,19 @@ export class SOSTransactionalMessageBroker implements TTNMessageBroker {
     return Promise.resolve('no persistent connection required')
   }
 
-  public createMessage(message: TTNMessageOM): Promise<SOSTransactionalMessage> {
+  public createMessage(message: ITTNMessageOM): Promise<ISOSTransactionalMessage> {
     // sensor = devID2Sensor()
     // makeInsertObservationPayload(sensor, message)
 
-    return Promise.resolve(<SOSTransactionalMessage> {})
+    return Promise.resolve(<ISOSTransactionalMessage> {})
   }
 
-  public submitMessage(message: SOSTransactionalMessage): Promise<BrokerResponse> {
+  public submitMessage(message: ISOSTransactionalMessage): Promise<IBrokerResponse> {
     // request(this.baseUrl, message).then()
-    return Promise.resolve(<BrokerResponse> { status: 201, message: 'created' })
+    return Promise.resolve(<IBrokerResponse> { status: 201, message: 'created' })
   }
 
-  private devID2Sensor(devID: string): Promise<Sensor> {
+  private devID2Sensor(devID: string): Promise<ISensor> {
     // let sensor = sensorCache.find(devID)
     // if (!sensor) { fetchSensors() }
     // if (!sensor) { insertSensor() }
@@ -120,11 +120,11 @@ export class SOSTransactionalMessageBroker implements TTNMessageBroker {
 
   }
 
-  private fetchSensors(): Promise<Sensor[]> {
+  private fetchSensors(): Promise<ISensor[]> {
     // request(baseUrl, { "request": "GetCapabilities", "service": "SOS", "sections": ["Contents"] }).then()
   }
 
-  private makeInsertObservationPayload(sensor: Sensor, ttnMsg: TTNMessageOM): SOSTransactionalMessage {
+  private makeInsertObservationPayload(sensor: ISensor, ttnMsg: ITTNMessageOM): ISOSTransactionalMessage {
     // extract timestamp of transmission: use time of gatewaytime if available
     const resultTime = ttnMsg.metadata.gateways[0].time || ttnMsg.metadata.time
     const phenomenonTime = ttnMsg.payload_fields.time || resultTime
@@ -132,7 +132,7 @@ export class SOSTransactionalMessageBroker implements TTNMessageBroker {
     // TODO: validate that payload_fields has the correct format
 
     // assume that a sensor only has one observable property and procedure
-    const message = <SOSTransactionalMessage> {
+    const message = <ISOSTransactionalMessage> {
       observation: {
         featureOfInterest: {
           identifier: {

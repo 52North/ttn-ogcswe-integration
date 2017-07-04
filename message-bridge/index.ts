@@ -2,10 +2,10 @@ import { readFileSync } from 'fs'
 import * as TTN from 'ttn'
 
 import {
-  BrokerResponse,
+  IBrokerResponse,
+  ITTNMessageBroker,
   SOSTransactionalMessageBroker,
   STAMQTTMessageBroker,
-  TTNMessageBroker,
 } from './brokers'
 
 export const backends = {
@@ -16,10 +16,10 @@ export const backends = {
 export class TTNMessageBridge {
 
   private readonly ttnClient: TTN
-  private readonly broker: TTNMessageBroker
+  private readonly broker: ITTNMessageBroker
   private readonly logger: Console
 
-  constructor(ttnOptions: TTNAuthOptions, broker: TTNMessageBroker, logger?: Console) {
+  constructor(ttnOptions: ITTNAuthOptions, broker: ITTNMessageBroker, logger?: Console) {
     const { region, applicationID, accessToken } = ttnOptions
 
     this.logger = logger || console
@@ -44,7 +44,7 @@ export class TTNMessageBridge {
       })
   }
 
-  private handleMessage(deviceID: string, message: TTNMessage) {
+  private handleMessage(deviceID: string, message: ITTNMessage) {
     this.logger.log(`handling message for ${deviceID}`)
 
     return this.broker.createMessage(message)

@@ -1,14 +1,14 @@
 // response format for any broker
-export interface BrokerResponse {
+export interface IBrokerResponse {
   status: number
   message: string
 }
 
 // interface to be implemented by any backend measurement broker
-export interface TTNMessageBroker {
+export interface ITTNMessageBroker {
   connect(): Promise<any>
-  createMessage(message: TTNMessage): Promise<any>
-  submitMessage(message: any): Promise<BrokerResponse>
+  createMessage(message: ITTNMessage): Promise<any>
+  submitMessage(message: any): Promise<IBrokerResponse>
 }
 
 export * from './STAMQTTMessageBroker'
