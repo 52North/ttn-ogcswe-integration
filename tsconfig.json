@@ -3,7 +3,6 @@
         "target": "es6",
         "module": "commonjs",
         "outDir": "./dist",
-        "typeRoots": ["node_modules", "./"],
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -13,6 +12,6 @@
     "exclude": [
         "node_modules",
         "tmp",
-        "build"
+        "dist"
     ]
 }

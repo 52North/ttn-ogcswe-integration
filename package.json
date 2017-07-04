@@ -4,11 +4,12 @@
   "description": "TheThingsNetwork integration with OGC SensorWeb",
   "main": "dist/index.js",
   "scripts": {
-    "start": "env $(cat .env | grep -v ^# | xargs) node dist/index.js",
-    "build": "rimraf dist && tsc -p .",
+    "start": "node dist/index.js",
+    "start:dev": "env $(cat .env | grep -v ^# | xargs) node --inspect dist/index.js",
+    "build": "rimraf dist && tsc -p . || true",
     "build:docker": "docker build -t noerw/ttn-ogcswe-integration .",
-    "dev:dist": "yarn run build && node --inspect dist/index.js",
-    "dev:src": "yarn run build && nodemon --watch src --exec yarn run dev:dist",
+    "dev:dist": "yarn run build && yarn run start:dev",
+    "dev:src": "nodemon --ignore node_modules --ignore dist --exec yarn run dev:dist",
     "lint": "tslint --fix '{{message-bridge,device-bridge,types}/**/,./}*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +24,8 @@
   },
   "homepage": "https://github.com/noerw/ttn-ogcswe-integration#readme",
   "devDependencies": {
+    "@types/node": "^8.0.7",
+    "@types/request-promise-native": "^1.0.5",
     "nodemon": "^1.11.0",
     "rimraf": "^2.6.1",
     "tslint": "^5.4.3",
@@ -30,6 +33,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
+    "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "ttn": "^2.1.1"
   }
