@@ -45,6 +45,7 @@ export class TTNMessageBridge {
     this.broker = broker
     this.broker.connect()
       .then(() => {
+        this.logger.log('initial connection with backend broker completed')
         // setup mqtt event handlers
         this.ttnClient.on('connect', () => this.logger.log(`connected to TTN app ${applicationID}`))
         this.ttnClient.on('error', this.logger.error)

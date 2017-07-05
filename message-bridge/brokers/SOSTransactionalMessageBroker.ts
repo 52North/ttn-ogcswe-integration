@@ -1,4 +1,4 @@
-import * as request from 'request-promise-native'
+import * as r from 'request-promise-native'
 import * as ttn from 'ttn'
 
 import { IBrokerResponse, ITTNMessageBroker } from '.'
@@ -89,40 +89,62 @@ interface ISensor {
 
 export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
-  private readonly baseUrl: string
-  private sensorCache: ISensor[]
+  private sos: SOSTransactionalInterface
+  private sensorCache: ISensor[] = []
 
   constructor(sosHost: string) {
-    // TODO: uri validation
-    this.baseUrl = sosHost + '/service'
+    this.sos = new SOSTransactionalInterface(sosHost)
   }
 
   public connect(): Promise<any> {
-    return Promise.resolve('no persistent connection required')
+    return this.fetchSensors()
   }
 
+  // TODO: test me
   public createMessage(message: ITTNMessageOM): Promise<ISOSTransactionalMessage> {
-    // sensor = devID2Sensor()
-    // makeInsertObservationPayload(sensor, message)
-
-    return Promise.resolve(<ISOSTransactionalMessage> {})
+    return this.devID2Sensor(message.dev_id)
+      .then((sensor) => this.makeInsertObservationPayload(sensor, message))
   }
 
+  // TODO: test me
   public submitMessage(message: ISOSTransactionalMessage): Promise<IBrokerResponse> {
-    // request(this.baseUrl, message).then()
-    return Promise.resolve(<IBrokerResponse> { status: 201, message: 'created' })
+    const { offering, observation } = message
+    return this.sos.insertObservation(offering, observation)
+      .then(() => Promise.resolve(<IBrokerResponse> { status: 201, message: 'created' }))
+      .catch((err) => Promise.reject(`could not submit observation: ${err}`))
   }
 
+  // TODO: test me
   private devID2Sensor(devID: string): Promise<ISensor> {
-    // let sensor = sensorCache.find(devID)
-    // if (!sensor) { fetchSensors() }
-    // if (!sensor) { insertSensor() }
-    // return sensor
+    // match a sensor from local cache by its prefixed ID
+    const findByID = (sensor: ISensor) => sensor.identifier === `thethingsnetwork-${devID}`
+    let sensor = this.sensorCache.find(findByID)
 
+    if (sensor) return Promise.resolve(sensor)
+
+    // if sensor is not found, refresh the cache
+    return this.fetchSensors()
+      .then((sensors: ISensor[]) => sensors.find(findByID))
+      .then((sensor) => {
+        if (sensor) return sensor
+
+        // if still nothing found, insert a new sensor
+        return this.sos.insertSensor()
+      })
+      // TODO: proper error handling
+      //.catch('error getting the corresponding sensor:')
   }
 
   private fetchSensors(): Promise<ISensor[]> {
-    // request(baseUrl, { "request": "GetCapabilities", "service": "SOS", "sections": ["Contents"] }).then()
+    return this.sos.getCapabilities(['Contents'])
+      // keep a cache of relevant sensors, filtering via identifier prefix
+      .then((res: { contents: ISensor[] }) => {
+        this.sensorCache = res.contents
+          .filter((sensor) => /^thethingsnetwork-.+/i.test(sensor.identifier))
+
+        return this.sensorCache
+      })
+      .catch((err: Error) => console.error(`could not fetch sensors from SOS: ${err}`))
   }
 
   private makeInsertObservationPayload(sensor: ISensor, ttnMsg: ITTNMessageOM): ISOSTransactionalMessage {
@@ -132,7 +154,9 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
     // TODO: validate that payload_fields has the correct format
 
-    // assume that a sensor only has one observable property and procedure
+    // assumptions:
+    // - a procedure has only one observable property and procedure
+    // - the offering associated with a procedure has the same value as sensor.identifier
     const message = <ISOSTransactionalMessage> {
       observation: {
         featureOfInterest: {
@@ -149,12 +173,65 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
         sampledFeature: ['http://www.opengis.net/def/nil/OGC/0/unknown'],
         type: 'http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement',
       },
-      offering: sensor.offering, // TODO: where do we get this?
-      request: 'InsertObservation',
-      service: 'SOS',
-      version: '2.0.0',
+      offering: sensor.procedure[0],
     }
 
     return message
   }
 }
+
+class SOSTransactionalInterface {
+
+  private readonly endpoint: string
+
+  constructor(host: string) {
+    // TODO: uri validation
+    this.endpoint = host + '/service'
+  }
+
+  public getCapabilities(sections?: CapabilitySections[]) {
+    return this.makeRequest('GetCapabilities', { sections })
+  }
+
+  public insertObservation(offering: string, observation: object) {
+    return this.makeRequest('InsertObservation', { offering, observation })
+  }
+
+  private makeRequest(request: RequestMethod, payload: object) {
+    const reqOpts = {
+      body: {
+        request,
+        service: 'SOS',
+        version: '2.0.0',
+      },
+      json: true,
+      method: 'POST',
+      uri: this.endpoint,
+    }
+
+    Object.assign(reqOpts.body, payload);
+
+    return r(reqOpts)
+  }
+}
+
+type CapabilitySections =
+  'Contents' |
+  'ServiceIdentification' |
+  'ServiceProvider' |
+  'OperationsMetadata' |
+  'FilterCapabilities'
+
+type RequestMethod =
+  'Batch' |
+  'DescribeSensor' |
+  'GetCapabilities' |
+  'GetDataAvailability' |
+  'GetFeatureOfInterest' |
+  'GetObservation' |
+  'GetObservationById' |
+  'GetResult' |
+  'GetResultTemplate' |
+  'InsertObservation' |
+  'InsertSensor' |
+  'UpdateSensorDescription'
