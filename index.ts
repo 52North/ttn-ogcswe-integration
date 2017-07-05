@@ -14,12 +14,12 @@ const ttnOpts = <ITTNOptions> {
 // get backend related settings & initialize instance
 let backend
 switch (process.env.TTN_BACKEND) {
-  case 'SOS-Transactional':
+  case 'SOS:transactional':
     const sosUrl = process.env.SOS_URL
     backend = new backends.SOSTransactionalMessageBroker(sosUrl)
     break
 
-  case 'SensorThings-MQTT':
+  case 'SensorThings:mqtt':
     const mqttUrl = process.env.STA_MQTT_URL
     backend = new backends.STAMQTTMessageBroker(mqttUrl)
     break
