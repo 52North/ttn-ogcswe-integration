@@ -25,7 +25,7 @@ switch (process.env.TTN_BACKEND) {
     break
 
   default:
-    console.error(`unkown backend ${process.env.TTN_BACKEND}`)
+    console.error(`unknown backend ${process.env.TTN_BACKEND}`)
     process.exit(1)
 }
 

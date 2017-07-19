@@ -4,14 +4,14 @@ export interface IObservation {
   type: URI               // always an O&M Measurement for our case
   procedure: URI          // represents the associated sensor
   observedProperty: URI   // the measured phenomenon
-  featureOfInterest: IFeatureOfInterest // must be specified once completely, afterwards just `identifier`
-  sampledFeature: URI[],
+  featureOfInterest: URI | IFeatureOfInterest // must be specified once completely, afterwards just `identifier`
+  sampledFeature?: URI[],
   phenomenonTime: ISODate // time of measurement
   resultTime: ISODate     // time of publication
-  result: IResult         // actual measurement value
+  result: IResult_OMMeasurement // actual measurement value // TODO: support other types
 }
 
-export interface IResult {
+export interface IResult_OMMeasurement {
   uom?: string // ideally a UCUM value
   time?: ISODate
   value: number

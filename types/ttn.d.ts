@@ -68,7 +68,7 @@ declare module 'ttn' {
       constructor(region: HandlerRegion, appId: string, appAccessKey: string, options?: MQTTOptions)
 
       public on(message: 'error', handler: (err: Error) => void): this
-      public on(message: 'connection', handler: (connack: object) => void): this
+      public on(message: 'connect', handler: (connack: object) => void): this
 
       public on(message: 'message',
                 handler: (deviceId: string, data: IUplinkMessage) => void): this

@@ -1,5 +1,3 @@
-import * as r from 'request-promise-native'
-
 import {
   ISensor,
   RequestMethod,
@@ -11,6 +9,7 @@ export interface IResponse {
   request: RequestMethod
   service: ServiceType
   version: ServiceVersion
+  exceptions?: object[]
 }
 
 export interface IGetCapabilitiesResponse extends IResponse {

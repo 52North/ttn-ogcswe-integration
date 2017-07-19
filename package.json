@@ -7,6 +7,7 @@
     "start": "node dist/index.js",
     "start:dev": "env $(cat .env | grep -v ^# | xargs) node --inspect dist/index.js",
     "build": "rimraf dist && tsc -p . || true",
+    "build:watch": "rimraf dist && tsc -p . -w || true",
     "build:docker": "docker build -t noerw/ttn-ogcswe-integration .",
     "dev:dist": "yarn run build && yarn run start:dev",
     "dev:src": "nodemon --ignore node_modules --ignore dist --exec yarn run dev:dist",
