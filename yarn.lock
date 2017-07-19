@@ -2,6 +2,29 @@
 # yarn lockfile v1
 
 
+"@types/form-data@*":
+  version "0.0.33"
+  resolved "https://registry.yarnpkg.com/@types/form-data/-/form-data-0.0.33.tgz#c9ac85b2a5fd18435b8c85d9ecb50e6d6c893ff8"
+  dependencies:
+    "@types/node" "*"
+
+"@types/node@*", "@types/node@^8.0.7":
+  version "8.0.14"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.14.tgz#4a19dc6bb61d16c01cbadc7b30ac23518fff176b"
+
+"@types/request-promise-native@^1.0.5":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@types/request-promise-native/-/request-promise-native-1.0.6.tgz#ab234405070074c5f98dbe943ae2960cbf1334d6"
+  dependencies:
+    "@types/request" "*"
+
+"@types/request@*":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.0.tgz#7d6fd2a1ef48ad07d0e3333471b8267156d707a4"
+  dependencies:
+    "@types/form-data" "*"
+    "@types/node" "*"
+
 abbrev@1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.0.tgz#d0554c2256636e2f56e7c2e5ad183f859428d81f"
@@ -1538,9 +1561,9 @@ tslint-consistent-codestyle@^1.5.0:
     tslib "^1.7.1"
     tsutils "^2.5.0"
 
-tslint@^5.4.3:
-  version "5.4.3"
-  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.4.3.tgz#761c8402b80e347b7733a04390a757b253580467"
+tslint@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/tslint/-/tslint-5.5.0.tgz#10e8dab3e3061fa61e9442e8cee3982acf20a6aa"
   dependencies:
     babel-code-frame "^6.22.0"
     colors "^1.1.2"
@@ -1551,15 +1574,21 @@ tslint@^5.4.3:
     resolve "^1.3.2"
     semver "^5.3.0"
     tslib "^1.7.1"
-    tsutils "^2.3.0"
+    tsutils "^2.5.1"
 
-tsutils@^2.3.0, tsutils@^2.5.0:
+tsutils@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.5.0.tgz#4d11d627f8c166433bebe8c7b74858d617dd8670"
 
-ttn@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/ttn/-/ttn-2.1.1.tgz#fb77a7916b1e1fd29fa703a29b4503418530ec53"
+tsutils@^2.5.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.7.1.tgz#411a0e9466525a2b2869260a55620d7292155e24"
+  dependencies:
+    tslib "^1.7.1"
+
+ttn@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/ttn/-/ttn-2.1.2.tgz#d79d41cf0ffc50f0e1cead2a554bb2ca5c42ba6c"
   dependencies:
     babel-runtime "^6.23.0"
     http-errors "^1.5.1"
