@@ -1,5 +1,5 @@
 import * as ttn from 'ttn'
-import { IBridgeOptions } from '../'
+import { IBridgeOptions } from '../BridgeOptions'
 import { SOSTransactionalMessageBroker } from './SOSTransactionalMessageBroker'
 import { STAMQTTMessageBroker } from './STAMQTTMessageBroker'
 

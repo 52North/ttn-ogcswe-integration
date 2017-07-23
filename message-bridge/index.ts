@@ -2,40 +2,11 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import * as ttn from 'ttn'
 
+import { IBridgeOptions } from './BridgeOptions'
 import {
   ITTNMessageBroker,
   messageBroker,
 } from './brokers'
-
-export interface IBridgeOptions {
-  ttn: {
-    accessToken: string
-    applicationID: string
-    options?: { ca: string }
-    region: string
-  }
-
-  broker: {
-    type: 'SOS:transactional'
-    options: {
-      host: string
-      token: string
-    }
-  } | {
-    type: 'SensorThings:mqtt'
-    options: { mqttConnectionString: string }
-  }
-
-  sensors: {
-    observedProperty: string
-    observedPropertyDefinition: string
-    unitOfMeasurement: string
-    bytes: number
-    transformer?: string
-  }[]
-
-  logger?: Console
-}
 
 export class TTNMessageBridge {
 

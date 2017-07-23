@@ -1,38 +1,33 @@
-import {
-  IBridgeOptions,
-  TTNMessageBridge,
-} from './message-bridge'
+import { readFileSync } from 'fs'
 
-// TODO: load these settings from file & validate!
-// IDEA: load an array of such configs, and launch one bridge each
-const bridgeOptions: IBridgeOptions = {
-  ttn: {
-    accessToken: process.env.TTN_APP_ACCESS_TOKEN,
-    applicationID: process.env.TTN_APP_ID,
-    region: process.env.TTN_REGION,
-  },
-  broker: {
-    type: 'SOS:transactional',
-    options: {
-      host: process.env.SOS_URL,
-      token: process.env.SOS_TOKEN,
-    },
-  },
-  sensors: [
-    {
-      observedProperty: 'Bird Count',
-      observedPropertyDefinition: 'BirdCount',
-      unitOfMeasurement: 'Count',
-      bytes: 1,
-    },
-    {
-      observedProperty: 'Air Temperature',
-      observedPropertyDefinition: 'http://sweet.jpl.nasa.gov/2.2/quanTemperature.owl#Temperature',
-      unitOfMeasurement: 'Cel',
-      bytes: 2,
-      transformer: 'bytes[0] + bytes[1] * 256'
-    }
-  ],
+import { TTNMessageBridge } from './message-bridge'
+import { IBridgeOptions, validate } from './message-bridge/BridgeOptions'
+
+
+// load settings from file
+let cfgString: string
+try {
+  cfgString = readFileSync('./config.json', 'utf8')
+} catch(err) {
+  console.error(`could not read bridge configuration: ${err}`)
+  process.exit(1)
 }
 
-const bridge = new TTNMessageBridge(bridgeOptions)
+// parse the json & validate its structure
+let bridgeOptions: IBridgeOptions[]
+try {
+  const opts = JSON.parse(cfgString)
+
+  // also allow non array, single bridge configurations
+  bridgeOptions = Array.isArray(opts) ? opts : [opts]
+
+  for (const opts of bridgeOptions) validate(opts)
+} catch(err) {
+  console.error(`bridge configuration is invalid: ${err}`)
+  process.exit(1)
+}
+
+// launch a bridge for each configuration element
+for (const opts of bridgeOptions) {
+  new TTNMessageBridge(opts)
+}

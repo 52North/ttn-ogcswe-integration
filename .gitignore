@@ -44,6 +44,7 @@ jspm_packages
 
 # Environment files
 *.env
+config.json
 
 # Editor files
 .vscode
