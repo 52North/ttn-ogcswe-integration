@@ -75,11 +75,11 @@ export class InsertSensorRequest extends Request {
   public readonly procedureDescriptionFormat: URI
   public readonly observableProperty: URI[]
   public readonly observationType: URI[]
-  public readonly featureOfInterestType: URI[]
+  public readonly featureOfInterestType: URI
 
   constructor(procedureDescriptionFormat: URI, procedureDescription: any,
               observableProperty: URI[], observationType: URI[],
-              featureOfInterestType: URI[]) {
+              featureOfInterestType: URI) {
     super()
     this.procedureDescriptionFormat = procedureDescriptionFormat
     this.procedureDescription= procedureDescription

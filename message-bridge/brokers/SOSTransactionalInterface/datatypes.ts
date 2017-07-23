@@ -18,9 +18,10 @@ export interface IResult_OMMeasurement {
 }
 
 export interface ISensor {
-  identifier: string
-  procedure: string[]
-  observableProperty: string[]
+  identifier: URI
+  name: URI
+  procedure: URI[]
+  observableProperty: URI[]
   relatedFeature: {
     featureOfInterest: URI
     role: any[]

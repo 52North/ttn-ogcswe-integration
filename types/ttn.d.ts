@@ -102,6 +102,9 @@ declare module 'ttn' {
       payload_raw: string
       payload_fields?: object
       metadata: Metadata
+      latitude?: number
+      longitude?: number
+      altitude?: number
     }
 
     export interface IActivationMessage {
