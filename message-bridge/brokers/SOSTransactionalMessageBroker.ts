@@ -23,7 +23,8 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     this.bridgeOpts = bridgeOpts
     this.logger = bridgeOpts.logger || console
     this.sensorIdPrefix = `ttn_${bridgeOpts.ttn.applicationID}_`
-    this.sos = new SOSTransactionalInterface(bridgeOpts.broker.options.host)
+    const { host, token } = bridgeOpts.broker.options
+    this.sos = new SOSTransactionalInterface(host, token)
   }
 
   public async init(): Promise<any> {
