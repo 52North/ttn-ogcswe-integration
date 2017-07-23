@@ -1,32 +1,38 @@
 import {
-  backends,
-  ITTNOptions,
+  IBridgeOptions,
   TTNMessageBridge,
 } from './message-bridge'
 
-// TTN related settings
-const ttnOpts = <ITTNOptions> {
-  accessToken: process.env.TTN_APP_ACCESS_TOKEN,
-  applicationID: process.env.TTN_APP_ID,
-  region: process.env.TTN_REGION,
+// TODO: load these settings from file & validate!
+// IDEA: load an array of such configs, and launch one bridge each
+const bridgeOptions: IBridgeOptions = {
+  ttn: {
+    accessToken: process.env.TTN_APP_ACCESS_TOKEN,
+    applicationID: process.env.TTN_APP_ID,
+    region: process.env.TTN_REGION,
+  },
+  broker: {
+    type: 'SOS:transactional',
+    options: {
+      host: process.env.SOS_URL,
+      token: process.env.SOS_TOKEN,
+    },
+  },
+  sensors: [
+    {
+      observedProperty: 'Bird Count',
+      observedPropertyDefinition: 'BirdCount',
+      unitOfMeasurement: 'Count',
+      bytes: 1,
+    },
+    {
+      observedProperty: 'Air Temperature',
+      observedPropertyDefinition: 'http://sweet.jpl.nasa.gov/2.2/quanTemperature.owl#Temperature',
+      unitOfMeasurement: 'Cel',
+      bytes: 2,
+      transformer: 'bytes[0] + bytes[1] * 256'
+    }
+  ],
 }
 
-// get backend related settings & initialize instance
-let backend
-switch (process.env.TTN_BACKEND) {
-  case 'SOS:transactional':
-    const sosUrl = process.env.SOS_URL
-    backend = new backends.SOSTransactionalMessageBroker(sosUrl)
-    break
-
-  case 'SensorThings:mqtt':
-    const mqttUrl = process.env.STA_MQTT_URL
-    backend = new backends.STAMQTTMessageBroker(mqttUrl)
-    break
-
-  default:
-    console.error(`unknown backend ${process.env.TTN_BACKEND}`)
-    process.exit(1)
-}
-
-const bridge = new TTNMessageBridge(ttnOpts, backend)
+const bridge = new TTNMessageBridge(bridgeOptions)

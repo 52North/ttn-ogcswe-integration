@@ -1,17 +1,36 @@
 import * as ttn from 'ttn'
+import { IBridgeOptions } from '../'
+import { SOSTransactionalMessageBroker } from './SOSTransactionalMessageBroker'
+import { STAMQTTMessageBroker } from './STAMQTTMessageBroker'
 
-// response format for any broker
-export interface IBrokerResponse {
-  status: number
-  message: string
-}
+export { IBridgeOptions } // export for classes implementing ITTNMessageBroker
 
-// interface to be implemented by any backend measurement broker
+// interface to be implemented by any backend measurement broker instance
 export interface ITTNMessageBroker {
-  connect(): Promise<any>
-  createMessage(message: ttn.data.IUplinkMessage): Promise<any>
-  submitMessage(message: any): Promise<IBrokerResponse>
+  init(): Promise<any>
+  createMessage(ttnMsg: ttn.data.IUplinkMessage): Promise<any>
+  submitMessage(message: any): Promise<any>
 }
 
-export * from './STAMQTTMessageBroker'
-export * from './SOSTransactionalMessageBroker'
+// constructor signature definition for classes implementing ITTNMessageBroker
+// we need to define the constructor type separately and use a factory function
+// to create brokers, because a TypeScript interface defines the structure of
+// a class *instance* only!
+interface BridgeOptsConstructable {
+  new (bridgeOptions: IBridgeOptions): ITTNMessageBroker
+}
+
+type BrokerType =
+  'SOS:transactional' |
+  'SensorThings:mqtt'
+
+// just a name mapping for easier access
+const brokers: { [k in BrokerType]: BridgeOptsConstructable } = {
+  'SOS:transactional': SOSTransactionalMessageBroker,
+  'SensorThings:mqtt': STAMQTTMessageBroker
+}
+
+// finally, the factory for new brokers!
+export function messageBroker(brokerType: BrokerType, bridgeOptions: IBridgeOptions) {
+  return new brokers[brokerType](bridgeOptions)
+}

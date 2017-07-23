@@ -1,6 +1,6 @@
 import * as ttn from 'ttn'
 
-import { IBrokerResponse, ITTNMessageBroker } from '.'
+import { IBridgeOptions, ITTNMessageBroker } from '.'
 
 // implements a broker against the SensorThings MQTT backend
 // eg. Geodan GOST implementation
@@ -11,11 +11,11 @@ export class STAMQTTMessageBroker implements ITTNMessageBroker {
 
   private readonly mqttConnectionString: string
 
-  constructor(mqttConnectionString: string) {
-    this.mqttConnectionString = mqttConnectionString
+  constructor(bridgeOpts: IBridgeOptions) {
+    this.mqttConnectionString = bridgeOpts.broker.options.mqttConnectionString
   }
 
-  public connect(): Promise<any> {
+  public init(): Promise<any> {
     return Promise.resolve('connected :^I')
   }
 
@@ -23,7 +23,7 @@ export class STAMQTTMessageBroker implements ITTNMessageBroker {
     return Promise.resolve(<ISTAMQTTMessage> message)
   }
 
-  public submitMessage(message: ISTAMQTTMessage): Promise<IBrokerResponse> {
-    return Promise.resolve(<IBrokerResponse> { status: 201, message: 'created' })
+  public submitMessage(message: ISTAMQTTMessage): Promise<any> {
+    return Promise.resolve('yeah!')
   }
 }

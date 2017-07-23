@@ -1,46 +1,60 @@
+import { readFileSync } from 'fs'
+import * as handlebars from 'handlebars'
 import * as ttn from 'ttn'
 
-import { IBrokerResponse, ITTNMessageBroker } from '.'
+import { IBridgeOptions, ITTNMessageBroker } from '.'
 import {
-  types,
+  InsertObservationParams,
+  InsertSensorParams,
   SOSTransactionalInterface,
+  types,
 } from './SOSTransactionalInterface'
-
-// implements a broker against the SOS Transactional Interface
 
 export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
-  private sos: SOSTransactionalInterface
+  private readonly bridgeOpts: IBridgeOptions
+  private readonly logger: Console
   private sensorCache: types.ISensor[] = []
+  private readonly sos: SOSTransactionalInterface
+  private readonly sensorIdPrefix: string
+  private sensorTemplate: HandlebarsTemplateDelegate
 
-  constructor(sosHost: string) {
-    this.sos = new SOSTransactionalInterface(sosHost)
+  constructor(bridgeOpts: IBridgeOptions) {
+    this.bridgeOpts = bridgeOpts
+    this.logger = bridgeOpts.logger || console
+    this.sensorIdPrefix = `ttn_${bridgeOpts.ttn.applicationID}_`
+    this.sos = new SOSTransactionalInterface(bridgeOpts.broker.options.host)
   }
 
-  public async connect(): Promise<any> {
-    return this.fetchSensors()
+  public async init(): Promise<any> {
+    // precompile the sensor template
+    const templateString = readFileSync('./sensorTemplate.xml', 'utf8')
+    this.sensorTemplate = handlebars.compile(templateString)
+
+    // fill the sensor cache
+    await this.fetchSensors()
+    this.logger.log(`found ${this.sensorCache.length} matching sensors`)
+  }
+
+  public async createMessage(ttnMsg: ITTNMessageOM): Promise<InsertObservationParams> {
+    const sensor = await this.dev2Sensor(ttnMsg)
+    return this.makeInsertObservationPayload(sensor, ttnMsg)
   }
 
   // TODO: test me
-  public async createMessage(message: ITTNMessageOM): Promise<InsertObservationParams> {
-    const sensor = await this.devID2Sensor(message.dev_id)
-    return this.makeInsertObservationPayload(sensor, message)
-  }
-
-  // TODO: test me
-  public async submitMessage(message: InsertObservationParams): Promise<IBrokerResponse> {
+  public async submitMessage(message: InsertObservationParams): Promise<any> {
     try {
       const { offering, observation } = message
-      await this.sos.insertObservation(offering, observation)
-      return { status: 201, message: 'created' }
+      return this.sos.insertObservation(offering, observation)
     } catch (err) {
       throw new Error(`could not submit observation: ${err}`)
     }
   }
 
-  // TODO: test me
-  private async devID2Sensor(devID: string): Promise<types.ISensor> {
-    const findByID = (sensor: types.ISensor) => sensor.identifier === `thethingsnetwork-${devID}`
+  private async dev2Sensor(ttnMsg: ITTNMessageOM): Promise<types.ISensor> {
+    const findByID = (sensor: types.ISensor) => {
+      return sensor.name === `${this.sensorIdPrefix}${ttnMsg.dev_id}`
+    }
 
     // match a sensor from local cache by its prefixed ID
     let sensor = this.sensorCache.find(findByID)
@@ -53,9 +67,12 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
       if (sensor) return sensor
 
       // if still nothing found, insert a new sensor
-      return await this.sos.insertSensor()
+      const sensorPayload = this.makeInsertSensorPayload(ttnMsg)
+      await this.sos.insertSensor(sensorPayload)
+      await this.fetchSensors() // TODO: do this without another fetch?
+      return this.sensorCache.find(findByID)
     } catch (err) {
-      throw new Error(`error getting the corresponding sensor for dev_id ${devID}: ${err}`)
+      throw new Error(`could not get corresponding sensor for dev_id '${ttnMsg.dev_id}': ${err}`)
     }
   }
 
@@ -63,9 +80,9 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     try {
       const { contents: sensors } = await this.sos.getCapabilities(['Contents'])
 
-      // keep a cache of relevant sensors, filtering via identifier prefix
+      // keep a cache of relevant sensors, filtering via name prefix
       this.sensorCache = sensors
-        .filter((sensor) => /^thethingsnetwork-.+/i.test(sensor.identifier))
+        .filter((sensor) => RegExp(`^${this.sensorIdPrefix}.+$`).test(sensor.name))
 
       return this.sensorCache
     } catch (err) {
@@ -75,48 +92,80 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
   private makeInsertObservationPayload(sensor: types.ISensor, ttnMsg: ITTNMessageOM): InsertObservationParams {
     // validate if ttn payload contains a valid OM_Measurement value
-    if (
-      !ttnMsg.payload_fields ||
-      typeof ttnMsg.payload_fields.value !== 'number' ||
-      typeof ttnMsg.payload_fields.uom !== 'string'
-    ) {
-      throw new Error('ttn payload does not contain a valid Observation Result')
+    for (const observedProp in ttnMsg.payload_fields) {
+      if (
+        typeof ttnMsg.payload_fields[observedProp].value !== 'number' ||
+        typeof ttnMsg.payload_fields[observedProp].uom !== 'string'
+      ) {
+        throw new Error('ttn payload does not contain a valid Observation Result')
+      }
     }
 
-    // extract timestamp of transmission: use time of gatewaytime if available
-    const resultTime = ttnMsg.metadata.gateways[0].time || ttnMsg.metadata.time
-    const phenomenonTime = ttnMsg.payload_fields.time || resultTime
-    const featureOfInterest = Array.isArray(sensor.observableProperty)
-      ? sensor.relatedFeature[0].featureOfInterest // TODO: check if relatedFeature actually exists
+    const featureOfInterest = sensor.relatedFeature
+      ? sensor.relatedFeature[0].featureOfInterest
       : 'http://www.opengis.net/def/nil/OGC/0/unknown'
 
-    // assumptions:
-    // - a procedure has only one observable property and procedure
-    // - the offering associated with a procedure has the same value as sensor.identifier
+    // extract timestamp of transmission: use time of gatewaytime if available
+    let resultTime = ttnMsg.metadata.gateways
+      ? ttnMsg.metadata.gateways[0].time
+      : ttnMsg.metadata.time
+
+    // "fun" fact: SOS accepts at most 3 decimals accuracy for timestamps..
+    resultTime = resultTime.replace(/(\,|\.)(\d{3})\d*/, '.$2')
+
     const message = {
-      observation: {
+      observation: <Array<types.IObservation>>[],
+      offering: sensor.identifier,
+    }
+
+    // payload_fields may contain multiple observations, with the observedProperty as key
+    for (const observedProperty of Object.keys(ttnMsg.payload_fields)) {
+      const phenomenonTime = (
+         ttnMsg.payload_fields[observedProperty].time ||
+         resultTime
+      ).replace(/(\,|\.)(\d{3})\d*/, '.$2') // truncate date decimals
+
+      message.observation.push({
         featureOfInterest,
-        observedProperty: sensor.observableProperty[0], // TODO: choose a specific one!
+        observedProperty,
         phenomenonTime,
         procedure: sensor.procedure[0],
-        result: ttnMsg.payload_fields,
+        result: ttnMsg.payload_fields[observedProperty],
         resultTime,
         type: 'http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement',
-      },
-      offering: sensor.procedure[0],
+      })
     }
 
     return message
   }
+
+  private makeInsertSensorPayload(ttnMsg: ITTNMessageOM): InsertSensorParams {
+    // generate SensorML from template
+    const procedureDescription = this.sensorTemplate({
+      HOST: this.bridgeOpts.broker.options.host,
+      SENSORS: this.bridgeOpts.sensors,
+      SENSOR_ID: `${this.sensorIdPrefix}${ttnMsg.dev_id}`,
+      LATITUDE: ttnMsg.latitude,
+      LONGITUDE: ttnMsg.longitude,
+      ALTITUDE: ttnMsg.altitude,
+    }).replace(/\s+/g, ' ') // deflate whitespace
+
+    return {
+      procedureDescription,
+      procedureDescriptionFormat: 'http://www.opengis.net/sensorml/2.0',
+      observableProperty: this.bridgeOpts.sensors.map((s) => s.observedPropertyDefinition),
+      observationType: ['http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement'],
+      featureOfInterestType: 'http://www.opengis.net/def/nil/OGC/0/unknown',
+    }
+  }
 }
 
-// specialisation of TTNMessage with specific payload fields structure for this backend
-// the TTN application needs a payload function returning this format!
+/**
+ * specialisation of TTNMessage with specific payload fields structure for this backend
+ * the TTN application needs a payload function returning this format!
+ */
 interface ITTNMessageOM extends ttn.data.IUplinkMessage {
-  payload_fields: types.IResult_OMMeasurement
-}
-
-type InsertObservationParams = {
-  observation: types.IObservation | types.IObservation[]
-  offering: string | string[]
+  payload_fields: {
+    [k: string]: types.IResult_OMMeasurement
+  }
 }

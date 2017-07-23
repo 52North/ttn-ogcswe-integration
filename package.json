@@ -34,6 +34,8 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
+    "@types/handlebars": "^4.0.34",
+    "handlebars": "^4.0.10",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "ttn": "^2.1.2"

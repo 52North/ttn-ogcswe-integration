@@ -25,13 +25,35 @@ export class SOSTransactionalInterface {
       .submit(this.endpoint)
   }
 
-  // public insertSensor() {
-  //   return new InsertSensorRequest()
-  //     .submit(this.endpoint)
-  // }
+  public insertSensor(sensor: InsertSensorParams) {
+    const {
+      procedureDescriptionFormat,
+      procedureDescription,
+      observableProperty,
+      observationType,
+      featureOfInterestType,
+    } = sensor
+
+    return new InsertSensorRequest(procedureDescriptionFormat, procedureDescription,
+                                   observableProperty, observationType, featureOfInterestType)
+      .submit(this.endpoint)
+  }
 
   public async insertObservation(offering: string | string[], observation: types.IObservation | types.IObservation[]) {
     return new InsertObservationRequest(offering, observation)
       .submit(this.endpoint)
   }
+}
+
+export type InsertSensorParams = {
+  procedureDescription: any
+  procedureDescriptionFormat: string
+  observableProperty: string[]
+  observationType: string[]
+  featureOfInterestType: string
+}
+
+export type InsertObservationParams = {
+  observation: types.IObservation | types.IObservation[]
+  offering: string | string[]
 }
