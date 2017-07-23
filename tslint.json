@@ -1,6 +1,7 @@
 {
    "extends": ["tslint:recommended", "tslint-consistent-codestyle"],
    "rules": {
+     "max-classes-per-file": [true, 8],
      "semicolon": [true, "never"],
      "quotemark": [true, "single"],
      "no-console": false,

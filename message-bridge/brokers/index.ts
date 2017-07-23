@@ -16,7 +16,7 @@ export interface ITTNMessageBroker {
 // we need to define the constructor type separately and use a factory function
 // to create brokers, because a TypeScript interface defines the structure of
 // a class *instance* only!
-interface BridgeOptsConstructable {
+interface IBridgeOptsConstructable {
   new (bridgeOptions: IBridgeOptions): ITTNMessageBroker
 }
 
@@ -25,9 +25,9 @@ type BrokerType =
   'SensorThings:mqtt'
 
 // just a name mapping for easier access
-const brokers: { [k in BrokerType]: BridgeOptsConstructable } = {
+const brokers: { [k in BrokerType]: IBridgeOptsConstructable } = {
   'SOS:transactional': SOSTransactionalMessageBroker,
-  'SensorThings:mqtt': STAMQTTMessageBroker
+  'SensorThings:mqtt': STAMQTTMessageBroker,
 }
 
 // finally, the factory for new brokers!

@@ -85,7 +85,7 @@ declare module 'ttn' {
                 handler: (deviceId: string, data: IActivationMessage | IDownlinkMessage) => void): this
     }
 
-    type MQTTOptions = {
+    interface MQTTOptions {
       ca: Buffer
       protocol?: 'mqtts' | 'mqtt'
     }

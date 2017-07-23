@@ -8,10 +8,10 @@ export interface IObservation {
   sampledFeature?: URI[],
   phenomenonTime: ISODate // time of measurement
   resultTime: ISODate     // time of publication
-  result: IResult_OMMeasurement // actual measurement value // TODO: support other types
+  result: IResultMeasurement // actual measurement value // TODO: support other types
 }
 
-export interface IResult_OMMeasurement {
+export interface IResultMeasurement {
   uom?: string // ideally a UCUM value
   time?: ISODate
   value: number
@@ -22,14 +22,14 @@ export interface ISensor {
   name: URI
   procedure: URI[]
   observableProperty: URI[]
-  relatedFeature: {
+  relatedFeature: Array<{
     featureOfInterest: URI
-    role: any[]
-  }[]
+    role: any[],
+  }>
   observedArea: {
     lowerLeft: number[]
     upperRight: number[]
-    crs?: { type: string, properties: any }
+    crs?: { type: string, properties: any },
   }
   phenomenonTime: ISODate[]
   resultTime: ISODate[]
@@ -59,7 +59,6 @@ interface IGeometry {
     properties: any,
   }
 }
-
 
 /**
  * general API parameters

@@ -1,13 +1,11 @@
-import { SOSTransactionalInterface } from '.'
+import { SOSTransactionalInterface, types } from '.'
 
 const sos = new SOSTransactionalInterface(
   process.env.SOS_URL || 'http://localhost:8080/52n-sos-webapp',
   process.env.SOS_TOKEN || 'asdftoken',
 )
 
-let sensors = []
-
-function generateObservation(sensor, result) {
+function generateObservation(sensor: types.ISensor, result: types.IResultMeasurement): types.IObservation {
   return {
     featureOfInterest: 'http://www.opengis.net/def/nil/OGC/0/unknown',
     observedProperty: sensor.observableProperty[0],
@@ -20,18 +18,20 @@ function generateObservation(sensor, result) {
 }
 
 // get available sensors
-async function test () {
+async function test() {
   try {
     console.log(`fetching sensors from SOS..`)
     const { contents: sensors } = await sos.getCapabilities(['Contents'])
 
     console.log(`SOS instance has ${sensors.length} sensors`)
-    if (!sensors.length) throw new Error('no sensors found')
+    if (!sensors.length) {
+      throw new Error('no sensors found')
+    }
     console.log(`sensor props: ${JSON.stringify(Object.keys(sensors[0]), null, 2)}`)
     console.log(`sensor: ${JSON.stringify(sensors[0], null, 2)}`)
 
     // const observation = getSampleTextObservation()
-    const observation = generateObservation(sensors[0],{
+    const observation = generateObservation(sensors[0], {
       uom: 'evilness',
       value: 66.6,
     })
@@ -42,7 +42,7 @@ async function test () {
 
     console.log(insertObsResponse)
   } catch (err) {
-    try{
+    try {
       console.error(`ERROR: ${JSON.stringify(err, null, 2)}`)
     } catch (err) {
       console.error(`ERROR: ${err}`)
@@ -50,4 +50,4 @@ async function test () {
   }
 }
 
-test();
+test()

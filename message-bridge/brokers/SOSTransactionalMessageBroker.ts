@@ -53,19 +53,23 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
   }
 
   private async dev2Sensor(ttnMsg: ITTNMessageOM): Promise<types.ISensor> {
-    const findByID = (sensor: types.ISensor) => {
-      return sensor.name === `${this.sensorIdPrefix}${ttnMsg.dev_id}`
+    const findByID = (s: types.ISensor) => {
+      return s.name === `${this.sensorIdPrefix}${ttnMsg.dev_id}`
     }
 
     // match a sensor from local cache by its prefixed ID
     let sensor = this.sensorCache.find(findByID)
-    if (sensor) return sensor
+    if (sensor) {
+      return sensor
+    }
 
     try {
       // if sensor is not found, refresh the cache
       await this.fetchSensors()
       sensor = this.sensorCache.find(findByID)
-      if (sensor) return sensor
+      if (sensor) {
+        return sensor
+      }
 
       // if still nothing found, insert a new sensor
       const sensorPayload = this.makeInsertSensorPayload(ttnMsg)
@@ -115,7 +119,7 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     resultTime = resultTime.replace(/(\,|\.)(\d{3})\d*/, '.$2')
 
     const message = {
-      observation: <Array<types.IObservation>>[],
+      observation: <types.IObservation[]> [],
       offering: sensor.identifier,
     }
 
@@ -143,20 +147,20 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
   private makeInsertSensorPayload(ttnMsg: ITTNMessageOM): InsertSensorParams {
     // generate SensorML from template
     const procedureDescription = this.sensorTemplate({
+      ALTITUDE: ttnMsg.altitude,
       HOST: this.bridgeOpts.broker.options.host,
-      SENSORS: this.bridgeOpts.sensors,
-      SENSOR_ID: `${this.sensorIdPrefix}${ttnMsg.dev_id}`,
       LATITUDE: ttnMsg.latitude,
       LONGITUDE: ttnMsg.longitude,
-      ALTITUDE: ttnMsg.altitude,
+      SENSORS: this.bridgeOpts.sensors,
+      SENSOR_ID: `${this.sensorIdPrefix}${ttnMsg.dev_id}`,
     }).replace(/\s+/g, ' ') // deflate whitespace
 
     return {
-      procedureDescription,
-      procedureDescriptionFormat: 'http://www.opengis.net/sensorml/2.0',
+      featureOfInterestType: 'http://www.opengis.net/def/nil/OGC/0/unknown',
       observableProperty: this.bridgeOpts.sensors.map((s) => s.observedPropertyDefinition),
       observationType: ['http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement'],
-      featureOfInterestType: 'http://www.opengis.net/def/nil/OGC/0/unknown',
+      procedureDescription,
+      procedureDescriptionFormat: 'http://www.opengis.net/sensorml/2.0',
     }
   }
 }
@@ -167,6 +171,6 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
  */
 interface ITTNMessageOM extends ttn.data.IUplinkMessage {
   payload_fields: {
-    [k: string]: types.IResult_OMMeasurement
+    [k: string]: types.IResultMeasurement,
   }
 }

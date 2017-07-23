@@ -11,7 +11,7 @@ const TTNOptions = t.intersection([
     applicationID: t.string,
     region: t.string,
   }),
-  t.partial({ options: t.interface({ ca: t.string }) })
+  t.partial({ options: t.interface({ ca: t.string }) }),
 ])
 
 const BrokerType = t.union([
@@ -32,28 +32,28 @@ const ObservationTransformer: t.Type<string> = {
     return typeof value === 'string'
       ? t.success(value)
       : t.failure(value, context)
-  }
+  },
 }
 
 const Sensor = t.intersection([
   t.interface({
+    bytes: t.Integer,
     observedProperty: t.string,
     observedPropertyDefinition: t.string,
     unitOfMeasurement: t.string,
-    bytes: t.Integer,
   }),
   t.partial({ transformer: ObservationTransformer }),
 ])
 
 const BridgeOptions = t.intersection([
   t.interface({
-    ttn: TTNOptions,
     broker: BrokerOptions,
     sensors: t.array(Sensor),
+    ttn: TTNOptions,
   }),
   t.partial({
-    logger: t.any
-  })
+    logger: t.any,
+  }),
 ])
 
 // infer the static TS type from the runtime type

@@ -1,8 +1,8 @@
 import {
   GetCapabilitiesRequest,
-  InsertSensorRequest,
   InsertObservationRequest,
-  RequestParams,
+  InsertSensorRequest,
+  IRequestParams,
 } from './requests'
 
 import * as types from './datatypes'
@@ -10,13 +10,13 @@ export { types }
 
 export class SOSTransactionalInterface {
 
-  private readonly endpoint: RequestParams
+  private readonly endpoint: IRequestParams
 
   constructor(host: string, token?: string) {
     // TODO: uri validation
     this.endpoint = {
+      token,
       uri: host + '/service/json',
-      token
     }
   }
 
@@ -45,7 +45,7 @@ export class SOSTransactionalInterface {
   }
 }
 
-export type InsertSensorParams = {
+export interface InsertSensorParams {
   procedureDescription: any
   procedureDescriptionFormat: string
   observableProperty: string[]
@@ -53,7 +53,7 @@ export type InsertSensorParams = {
   featureOfInterestType: string
 }
 
-export type InsertObservationParams = {
+export interface InsertObservationParams {
   observation: types.IObservation | types.IObservation[]
   offering: string | string[]
 }

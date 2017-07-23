@@ -3,7 +3,10 @@ import {
   RequestMethod,
   ServiceType,
   ServiceVersion,
+  URI,
 } from './datatypes'
+
+// reference: https://github.com/52North/sos/tree/master/coding/json-common/src/main/resources/schema/sos/response
 
 export interface IResponse {
   request: RequestMethod
@@ -13,6 +16,7 @@ export interface IResponse {
 }
 
 export interface IGetCapabilitiesResponse extends IResponse {
+  request: 'GetCapabilities'
   contents?: ISensor[]
   filterCapabilities?: object
   operationMetadata?: object
@@ -20,5 +24,12 @@ export interface IGetCapabilitiesResponse extends IResponse {
   serviceProvider?: object
 }
 
-export interface IInsertSensorResponse extends IResponse { }
-export interface IInsertObservationResponse extends IResponse { }
+export interface IInsertSensorResponse extends IResponse {
+  request: 'InsertSensor'
+  assignedOffering: URI
+  assignedProcedure: URI
+}
+
+export interface IInsertObservationResponse extends IResponse {
+  request: 'InsertObservation'
+}
