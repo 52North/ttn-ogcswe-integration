@@ -1,0 +1,19 @@
+- ttn:
+    accessToken: token for the applicationID with messages permission
+    applicationID: your appID (not appeui!)
+    region: eu
+  broker:
+    type: SOS:transactional
+    options:
+      host: http://localhost:8080/52n-sos-webapp
+      token: optional access token
+  sensors:
+  - observedProperty: Bird Count
+    observedPropertyDefinition: BirdCount
+    unitOfMeasurement: Count
+    bytes: 1
+  - observedProperty: Air Temperature
+    observedPropertyDefinition: http://sweet.jpl.nasa.gov/2.2/quanTemperature.owl#Temperature
+    unitOfMeasurement: Cel
+    bytes: 2
+    transformer: bytes[0] + bytes[1] * 256

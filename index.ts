@@ -1,30 +1,25 @@
 import { readFileSync } from 'fs'
+import { safeLoad } from 'js-yaml'
 
 import { TTNMessageBridge } from './message-bridge'
 import { IBridgeOptions, validate } from './message-bridge/BridgeOptions'
 
-// load settings from file
-let cfgString: string
-try {
-  cfgString = readFileSync('./config.json', 'utf8')
-} catch (err) {
-  console.error(`could not read bridge configuration: ${err}`)
-  process.exit(1)
-}
 
-// parse the json & validate its structure
+// load, parse & validate the bridge defintions
 let bridgeOptions: IBridgeOptions[]
 try {
-  const opts = JSON.parse(cfgString)
+  // load yaml from file & parse it
+  const opts = safeLoad(readFileSync('./config.yml', 'utf8'))
 
   // also allow non array, single bridge configurations
   bridgeOptions = Array.isArray(opts) ? opts : [opts]
 
+  // validate each contained bridge definition
   for (const options of bridgeOptions) {
     validate(options)
   }
 } catch (err) {
-  console.error(`bridge configuration is invalid: ${err}`)
+  console.error(`bridge configuration is invalid or missing: ${err}`)
   process.exit(1)
 }
 

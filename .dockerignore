@@ -4,7 +4,7 @@ Dockerfile
 LICENSE
 README.*
 .env*
-config.json.sample
+config.yml.sample
 .DS_Store
 .vscode
 tsconfig.json
