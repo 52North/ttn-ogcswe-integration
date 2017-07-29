@@ -3,10 +3,8 @@ import { join } from 'path'
 import * as ttn from 'ttn'
 
 import { IBridgeOptions } from './BridgeOptions'
-import {
-  ITTNMessageBroker,
-  messageBroker,
-} from './brokers'
+import { ITTNMessageBroker, messageBroker } from './brokers'
+import { generateDecoderFunc } from './TTNDecoding'
 
 export class TTNMessageBridge {
 
@@ -20,6 +18,10 @@ export class TTNMessageBridge {
 
     this.bridgeOptions = bridgeOptions
     this.logger = bridgeOptions.logger || console
+
+    // FIXME: only proceed once this has succeeded
+    this.setupTTNApp()
+      .catch(err => this.logger.error(`WARNING: unable to set the decoder for the TTN application: ${err}`))
 
     // init ttn mqtt connection
     this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken, {
@@ -42,6 +44,23 @@ export class TTNMessageBridge {
         this.logger.error(`unable to initialize backend broker: ${err}`)
         process.exit(1)
       })
+  }
+
+  private async setupTTNApp(): Promise<any> {
+    const { applicationID, accessToken, region } = this.bridgeOptions.ttn
+
+    // init ttn application manager
+    const manager = new ttn.manager.HTTP({
+      key: this.bridgeOptions.ttn.accessToken,
+      region: this.bridgeOptions.ttn.region,
+    })
+
+    // set the payload function for decoding
+    // TODO: create an application, if it wasnt found
+    const app = await manager.getApplication(applicationID)
+    app.decoder = generateDecoderFunc(this.bridgeOptions.sensors)
+
+    return manager.setApplication(applicationID, app)
   }
 
   private async handleTTNMessage(deviceID: string, message: ttn.data.IUplinkMessage) {

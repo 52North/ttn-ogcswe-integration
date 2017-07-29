@@ -1,6 +1,8 @@
 import * as t from 'io-ts'
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter'
 
+import { validateTransformer } from './TTNDecoding'
+
 /**
  * type definition of the bridge config, with runtime validation using io-ts
  */
@@ -28,10 +30,16 @@ const ObservationTransformer: t.Type<string> = {
   _A: t._A,
   name: 'ObservationTransformer',
   validate(value, context) {
-    // TODO: proper validation!
-    return typeof value === 'string'
-      ? t.success(value)
-      : t.failure(value, context)
+    if (typeof value !== 'string') {
+      return t.failure(value, context)
+    }
+
+    try {
+      validateTransformer(value)
+      return t.success(value)
+    } catch (err) {
+      return t.failure(value, context)
+    }
   },
 }
 
@@ -58,6 +66,7 @@ const BridgeOptions = t.intersection([
 
 // infer the static TS type from the runtime type
 export type IBridgeOptions = t.TypeOf<typeof BridgeOptions>
+export type ISensorDefinition = t.TypeOf<typeof Sensor>
 
 /**
  * validates an object to the IBridgeOptions interface, and throws if invalid
