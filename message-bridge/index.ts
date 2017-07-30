@@ -7,7 +7,7 @@ import { ITTNMessageBroker, messageBroker } from './brokers'
 
 export class TTNMessageBridge {
 
-  private readonly ttnClient: ttn.data.MQTT
+  private ttnClient: ttn.data.MQTT
   private readonly broker: ITTNMessageBroker
   private readonly logger: Console
   private readonly bridgeOptions: IBridgeOptions
@@ -18,26 +18,26 @@ export class TTNMessageBridge {
     this.bridgeOptions = bridgeOptions
     this.logger = bridgeOptions.logger || console
 
-    // init ttn mqtt connection
-    this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken, {
-      ca: readFileSync(join(__dirname, '../../mqtt-ca.pem')),
-    })
-
-    // setup mqtt event handlers
-    this.ttnClient.on('connect', () => this.logger.log(`connected to TTN app '${applicationID}'`))
-    this.ttnClient.on('error', this.logger.error)
-
     // init backend broker
     this.broker = messageBroker(bridgeOptions.broker.type, bridgeOptions)
 
     this.broker.init()
-      .then(() => {
-        this.logger.log('backend broker initialized')
-        this.ttnClient.on('message', this.handleTTNMessage.bind(this))
-      })
       .catch((err: Error) => {
         this.logger.error(`unable to initialize backend broker: ${err}`)
         process.exit(1)
+      })
+      .then(() => {
+        this.logger.log('backend broker initialized')
+
+        // init ttn mqtt connection
+        this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken, {
+          ca: readFileSync(join(__dirname, '../../mqtt-ca.pem')),
+        })
+
+        // setup mqtt event handlers
+        this.ttnClient.on('connect', () => this.logger.log(`connected to TTN app '${applicationID}'`))
+        this.ttnClient.on('error', this.logger.error)
+        this.ttnClient.on('message', this.handleTTNMessage.bind(this))
       })
   }
 
