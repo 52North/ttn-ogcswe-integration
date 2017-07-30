@@ -1,8 +1,6 @@
 import * as t from 'io-ts'
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter'
 
-import { validateTransformer } from './brokers/TTNDecoding'
-
 /**
  * type definition of the bridge config, with runtime validation using io-ts
  */
@@ -18,6 +16,7 @@ const TTNOptions = t.intersection([
 
 const BrokerType = t.union([
   t.literal('SOS:transactional'),
+  t.literal('SOS:mqtt'),
   // t.literal('SensorThings:mqtt'),
 ])
 

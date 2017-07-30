@@ -1,6 +1,7 @@
 import * as ttn from 'ttn'
 import { IBridgeOptions } from '../BridgeOptions'
 import { SOSTransactionalMessageBroker } from './SOSTransactionalMessageBroker'
+import { SOSMQTTMessageBroker } from './SOSMQTTMessageBroker'
 import { STAMQTTMessageBroker } from './STAMQTTMessageBroker'
 
 export { IBridgeOptions } // export for classes implementing ITTNMessageBroker
@@ -22,11 +23,13 @@ interface IBridgeOptsConstructable {
 
 type BrokerType =
   'SOS:transactional' |
+  'SOS:mqtt' |
   'SensorThings:mqtt'
 
 // just a name mapping for easier access
 const brokers: { [k in BrokerType]: IBridgeOptsConstructable } = {
   'SOS:transactional': SOSTransactionalMessageBroker,
+  'SOS:mqtt': SOSMQTTMessageBroker,
   'SensorThings:mqtt': STAMQTTMessageBroker,
 }
 

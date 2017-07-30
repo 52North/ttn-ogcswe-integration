@@ -30,7 +30,7 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     this.sos = new SOSTransactionalInterface(host, token)
 
     this.payloadFuncManager = new TTNPayloadFunctionManager(bridgeOpts, {
-      decoder: './decoderTemplate.js'
+      decoder: './decoderTemplate.sostransactional.js'
     })
   }
 
