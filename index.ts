@@ -24,13 +24,6 @@ try {
 }
 
 // launch a bridge for each configuration element
-const bridges = []
 for (const opts of bridgeOptions) {
-  bridges.push(new TTNMessageBridge(opts))
+  new TTNMessageBridge(opts)
 }
-
-Promise.all(bridges.map(b => b.init()))
-  .then((result) => {
-    console.log(`initialization of ${result.length} bridges finished`)
-  })
-  .catch(console.error)

@@ -8,24 +8,20 @@ import { generateDecoderFunc } from './TTNDecoding'
 
 export class TTNMessageBridge {
 
-  private ttnClient: ttn.data.MQTT
-  private broker: ITTNMessageBroker
+  private readonly ttnClient: ttn.data.MQTT
+  private readonly broker: ITTNMessageBroker
   private readonly logger: Console
   private readonly bridgeOptions: IBridgeOptions
 
   constructor(bridgeOptions: IBridgeOptions) {
+    const { region, applicationID, accessToken } = bridgeOptions.ttn
+
     this.bridgeOptions = bridgeOptions
     this.logger = bridgeOptions.logger || console
-  }
 
-  public async init() {
-    const { region, applicationID, accessToken } = this.bridgeOptions.ttn
-
-    try {
-      await this.setupTTNApp()
-    } catch (err) {
-      throw new Error(`unable to set the decoder for the TTN application: ${err}`)
-    }
+    // FIXME: only proceed once this has succeeded
+    this.setupTTNApp()
+      .catch(err => this.logger.error(`WARNING: unable to set the decoder for the TTN application: ${err}`))
 
     // init ttn mqtt connection
     this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken, {
@@ -37,9 +33,9 @@ export class TTNMessageBridge {
     this.ttnClient.on('error', this.logger.error)
 
     // init backend broker
-    this.broker = messageBroker(this.bridgeOptions.broker.type, this.bridgeOptions)
+    this.broker = messageBroker(bridgeOptions.broker.type, bridgeOptions)
 
-    return this.broker.init()
+    this.broker.init()
       .then(() => {
         this.logger.log('backend broker initialized')
         this.ttnClient.on('message', this.handleTTNMessage.bind(this))
@@ -60,6 +56,7 @@ export class TTNMessageBridge {
     })
 
     // set the payload function for decoding
+    // TODO: create an application, if it wasnt found
     const app = await manager.getApplication(applicationID)
     app.decoder = generateDecoderFunc(this.bridgeOptions.sensors)
 
