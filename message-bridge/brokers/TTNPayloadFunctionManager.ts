@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs'
 import * as handlebars from 'handlebars'
 import * as ttn from 'ttn'
+import { VM } from 'vm2'
 
 import { IBridgeOptions } from '../BridgeOptions'
 
@@ -83,7 +84,10 @@ export class TTNPayloadFunctionManager {
     return expression
   }
 
-  // wrap an expression in a function `(bytes: Buffer) => number`
+  /**
+   * wrap an expression in a function `(bytes: Buffer) => number`
+   * @param transformer a string containing a JS expression
+   */
   private wrapTransformer(transformer: string): string {
     return /^function.+/.test(transformer)
       ? transformer
@@ -92,14 +96,17 @@ export class TTNPayloadFunctionManager {
       }`
   }
 
+  /**
+   * create a sandbox, set up the target environment and run the transformer.
+   * if it does not behave, an error is thrown
+   * @param transformer a string supposed to contain a JS expression
+   */
   private validateTransformer (transformer: string) {
-    // setup fake environment in closure
-    const bytes = Array(100).fill(1);
-
-    // try to eval the transformer expression
-    // TODO: eval in separated environment: https://www.npmjs.com/package/vm2
     try {
-      eval(transformer);
+      new VM().run(`
+        const bytes = Array(100).fill(1);
+        ${transformer}
+      `)
     } catch (err) {
       throw new Error(`invalid transformer function ${transformer}: ${err.message}`)
     }
