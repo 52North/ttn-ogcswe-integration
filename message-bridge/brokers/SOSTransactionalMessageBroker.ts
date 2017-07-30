@@ -9,7 +9,7 @@ import {
   SOSTransactionalInterface,
   types,
 } from './SOSTransactionalInterface'
-import { generateDecoderFunc } from './TTNDecoding'
+import { TTNPayloadFunctionManager } from './TTNPayloadFunctionManager'
 
 export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
@@ -17,6 +17,7 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
   private readonly logger: Console
   private sensorCache: types.ISensor[] = []
   private readonly sos: SOSTransactionalInterface
+  private readonly payloadFuncManager: TTNPayloadFunctionManager
   private readonly sensorIdPrefix: string
   private sensorTemplate: HandlebarsTemplateDelegate
 
@@ -24,8 +25,13 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     this.bridgeOpts = bridgeOpts
     this.logger = bridgeOpts.logger || console
     this.sensorIdPrefix = `ttn_${bridgeOpts.ttn.applicationID}_`
+
     const { host, token } = bridgeOpts.broker.options
     this.sos = new SOSTransactionalInterface(host, token)
+
+    this.payloadFuncManager = new TTNPayloadFunctionManager(bridgeOpts, {
+      decoder: './decoderTemplate.js'
+    })
   }
 
   public async init(): Promise<any> {
@@ -34,12 +40,8 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     this.sensorTemplate = handlebars.compile(templateString)
 
     // initialize the TTN app.
-    try {
-      await this.setupTTNApp()
-      this.logger.log('TTN payload function set up')
-    } catch (err) {
-      throw new Error(`unable to set the decoder for the TTN application: ${err}`)
-    }
+    await this.payloadFuncManager.setPayloadFunctions()
+    this.logger.log('TTN payload function set up')
 
     // fill the sensor cache
     await this.fetchSensors()
@@ -58,24 +60,6 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     } catch (err) {
       throw new Error(`could not submit observation: ${err}`)
     }
-  }
-
-  private async setupTTNApp(): Promise<any> {
-    const { applicationID, accessToken, region } = this.bridgeOpts.ttn
-
-    // init ttn application manager
-    const manager = new ttn.manager.HTTP({
-      key: this.bridgeOpts.ttn.accessToken,
-      region: this.bridgeOpts.ttn.region,
-    })
-
-    // try to generate a decode function & upload it
-    const decoder = generateDecoderFunc(this.bridgeOpts.sensors)
-    const app = await manager.getApplication(applicationID)
-
-    return (app.decoder === decoder)
-      ? Promise.resolve()
-      : manager.setApplication(applicationID, app)
   }
 
   private async dev2Sensor(ttnMsg: ITTNMessageOM): Promise<types.ISensor> {

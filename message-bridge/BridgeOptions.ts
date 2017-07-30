@@ -1,7 +1,7 @@
 import * as t from 'io-ts'
 import { ThrowReporter } from 'io-ts/lib/ThrowReporter'
 
-import { validateTransformer } from './TTNDecoding'
+import { validateTransformer } from './brokers/TTNDecoding'
 
 /**
  * type definition of the bridge config, with runtime validation using io-ts
@@ -26,23 +26,6 @@ const BrokerOptions = t.intersection([
     t.partial({ options: t.Dictionary }),
 ])
 
-const ObservationTransformer: t.Type<string> = {
-  _A: t._A,
-  name: 'ObservationTransformer',
-  validate(value, context) {
-    if (typeof value !== 'string') {
-      return t.failure(value, context)
-    }
-
-    try {
-      validateTransformer(value)
-      return t.success(value)
-    } catch (err) {
-      return t.failure(value, context)
-    }
-  },
-}
-
 const Sensor = t.intersection([
   t.interface({
     bytes: t.Integer,
@@ -50,7 +33,7 @@ const Sensor = t.intersection([
     observedPropertyDefinition: t.string,
     unitOfMeasurement: t.string,
   }),
-  t.partial({ transformer: ObservationTransformer }),
+  t.partial({ transformer: t.string }), // proper validation of the JS string happens when parsing
 ])
 
 const BridgeOptions = t.intersection([

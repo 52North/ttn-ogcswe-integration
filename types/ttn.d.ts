@@ -34,6 +34,7 @@ declare module 'ttn' {
       decoder: string
       encoder: string
       validator: string
+      [k: string]: string
     }
 
     export interface Device {
