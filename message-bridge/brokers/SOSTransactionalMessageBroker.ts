@@ -9,6 +9,7 @@ import {
   SOSTransactionalInterface,
   types,
 } from './SOSTransactionalInterface'
+import { generateDecoderFunc } from './TTNDecoding'
 
 export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
@@ -32,6 +33,14 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     const templateString = readFileSync('./sensorTemplate.xml', 'utf8')
     this.sensorTemplate = handlebars.compile(templateString)
 
+    // initialize the TTN app.
+    try {
+      await this.setupTTNApp()
+      this.logger.log('TTN payload function set up')
+    } catch (err) {
+      throw new Error(`unable to set the decoder for the TTN application: ${err}`)
+    }
+
     // fill the sensor cache
     await this.fetchSensors()
     this.logger.log(`found ${this.sensorCache.length} matching sensors`)
@@ -42,7 +51,6 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     return this.makeInsertObservationPayload(sensor, ttnMsg)
   }
 
-  // TODO: test me
   public async submitMessage(message: InsertObservationParams): Promise<any> {
     try {
       const { offering, observation } = message
@@ -50,6 +58,24 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     } catch (err) {
       throw new Error(`could not submit observation: ${err}`)
     }
+  }
+
+  private async setupTTNApp(): Promise<any> {
+    const { applicationID, accessToken, region } = this.bridgeOpts.ttn
+
+    // init ttn application manager
+    const manager = new ttn.manager.HTTP({
+      key: this.bridgeOpts.ttn.accessToken,
+      region: this.bridgeOpts.ttn.region,
+    })
+
+    // try to generate a decode function & upload it
+    const decoder = generateDecoderFunc(this.bridgeOpts.sensors)
+    const app = await manager.getApplication(applicationID)
+
+    return (app.decoder === decoder)
+      ? Promise.resolve()
+      : manager.setApplication(applicationID, app)
   }
 
   private async dev2Sensor(ttnMsg: ITTNMessageOM): Promise<types.ISensor> {
