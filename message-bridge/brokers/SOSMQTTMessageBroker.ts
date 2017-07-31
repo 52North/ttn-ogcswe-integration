@@ -16,7 +16,7 @@ export class SOSMQTTMessageBroker implements ITTNMessageBroker {
     // the decode function must generate an OM Measurement a la
     // https://github.com/52North/sos/blob/master/coding/json/src/main/resources/examples/measurement-geometry-ref.json
     this.payloadFuncManager = new TTNPayloadFunctionManager(bridgeOpts, {
-      decoder: './templates/sosmqtt_decoder.js'
+      decoder: './templates/sosmqtt_decoder.js',
     })
   }
 

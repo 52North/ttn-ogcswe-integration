@@ -5,7 +5,11 @@ import { VM } from 'vm2'
 
 import { IBridgeOptions } from '../BridgeOptions'
 
-type PayloadFunctions<T> = {
+/**
+ * generates payloadfunctions from templates and submits them to TTN
+ */
+
+interface IPayloadFunctions<T> {
   converter?: T
   decoder?: T
   encoder?: T
@@ -15,10 +19,10 @@ type PayloadFunctions<T> = {
 
 export class TTNPayloadFunctionManager {
   private readonly bridgeOpts: IBridgeOptions
-  private readonly templates: PayloadFunctions<HandlebarsTemplateDelegate> {}
+  private readonly templates: IPayloadFunctions<HandlebarsTemplateDelegate> {}
   private readonly ttnManager: ttn.manager.HTTP
 
-  constructor (bridgeOpts: IBridgeOptions, templatePaths: PayloadFunctions<string>) {
+  constructor(bridgeOpts: IBridgeOptions, templatePaths: IPayloadFunctions<string>) {
     this.bridgeOpts = bridgeOpts
 
     // load & precompile each template
@@ -35,7 +39,8 @@ export class TTNPayloadFunctionManager {
   public async setPayloadFunctions(): Promise<any> {
     const functions = this.generatePayloadFunctions()
 
-    const app: ttn.manager.Application = await this.ttnManager.getApplication(this.bridgeOpts.ttn.applicationID)
+    const app: ttn.manager.Application = await this.ttnManager
+      .getApplication(this.bridgeOpts.ttn.applicationID)
 
     let changes = false
     for (const func in functions) {
@@ -51,12 +56,12 @@ export class TTNPayloadFunctionManager {
 
   }
 
-  private generatePayloadFunctions(): PayloadFunctions<string> {
+  private generatePayloadFunctions(): IPayloadFunctions<string> {
     // validate transformer function for each sensor
     // or set default if not defined.
     for (const s of this.bridgeOpts.sensors) {
       if (s.transformer) {
-        this.validateTransformer(s.transformer);
+        this.validateTransformer(s.transformer)
       } else {
         s.transformer = this.getDefaultTransformer(s.bytes)
       }
@@ -65,7 +70,7 @@ export class TTNPayloadFunctionManager {
     }
 
     // generate the function strings by feeding bridgeOpts to each template
-    const result: PayloadFunctions<string> = {}
+    const result: IPayloadFunctions<string> = {}
     for (const func in this.templates) {
       result[func] = this.templates[func](this.bridgeOpts)
     }
@@ -101,7 +106,7 @@ export class TTNPayloadFunctionManager {
    * if it does not behave, an error is thrown
    * @param transformer a string supposed to contain a JS expression
    */
-  private validateTransformer (transformer: string) {
+  private validateTransformer(transformer: string) {
     try {
       new VM().run(`
         const bytes = Array(100).fill(1);

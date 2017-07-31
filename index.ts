@@ -4,7 +4,6 @@ import { safeLoad } from 'js-yaml'
 import { TTNMessageBridge } from './message-bridge'
 import { IBridgeOptions, validate } from './message-bridge/BridgeOptions'
 
-
 // load, parse & validate the bridge defintions
 let bridgeOptions: IBridgeOptions[]
 try {
