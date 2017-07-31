@@ -30,13 +30,13 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
     this.sos = new SOSTransactionalInterface(host, token)
 
     this.payloadFuncManager = new TTNPayloadFunctionManager(bridgeOpts, {
-      decoder: './decoderTemplate.sostransactional.js'
+      decoder: './templates/sostransactional_decoder.js'
     })
   }
 
   public async init(): Promise<any> {
     // precompile the sensor template
-    const templateString = readFileSync('./sensorTemplate.xml', 'utf8')
+    const templateString = readFileSync('./templates/sostransactional_sensor.xml', 'utf8')
     this.sensorTemplate = handlebars.compile(templateString)
 
     // initialize the TTN app.
