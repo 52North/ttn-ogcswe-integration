@@ -29,9 +29,9 @@
   <sml:outputs>
     <sml:OutputList>
       {{#each SENSORS}}
-      <sml:output name="{{observedProperty}}">
-        <swe:Quantity definition="{{observedPropertyDefinition}}">
-          <swe:label>{{observedProperty}}</swe:label>
+      <sml:output name="{{observedPropertyName}}">
+        <swe:Quantity definition="{{observedProperty}}">
+          <swe:label>{{observedPropertyName}}</swe:label>
           <swe:uom code="{{unitOfMeasurement}}"/>
         </swe:Quantity>
       </sml:output>

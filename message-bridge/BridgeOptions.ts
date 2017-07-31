@@ -29,7 +29,7 @@ const Sensor = t.intersection([
   t.interface({
     bytes: t.Integer,
     observedProperty: t.string,
-    observedPropertyDefinition: t.string,
+    observedPropertyName: t.string,
     unitOfMeasurement: t.string,
   }),
   t.partial({ transformer: t.string }), // proper validation of the JS string happens when parsing

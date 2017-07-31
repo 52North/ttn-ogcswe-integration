@@ -167,7 +167,7 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
     return {
       featureOfInterestType: 'http://www.opengis.net/def/nil/OGC/0/unknown',
-      observableProperty: this.bridgeOpts.sensors.map((s) => s.observedPropertyDefinition),
+      observableProperty: this.bridgeOpts.sensors.map((s) => s.observedProperty),
       observationType: ['http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement'],
       procedureDescription,
       procedureDescriptionFormat: 'http://www.opengis.net/sensorml/2.0',
