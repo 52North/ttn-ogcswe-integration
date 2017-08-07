@@ -19,7 +19,7 @@ interface IPayloadFunctions<T> {
 
 export class TTNPayloadFunctionManager {
   private readonly bridgeOpts: IBridgeOptions
-  private readonly templates: IPayloadFunctions<HandlebarsTemplateDelegate> {}
+  private readonly templates: IPayloadFunctions<HandlebarsTemplateDelegate> = {}
   private readonly ttnManager: ttn.manager.HTTP
 
   constructor(bridgeOpts: IBridgeOptions, templatePaths: IPayloadFunctions<string>) {
