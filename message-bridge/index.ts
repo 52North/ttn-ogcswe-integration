@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs'
 import { join } from 'path'
 import * as ttn from 'ttn'
 
@@ -30,9 +29,7 @@ export class TTNMessageBridge {
         this.logger.log('backend broker initialized')
 
         // init ttn mqtt connection
-        this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken, {
-          ca: readFileSync(join(__dirname, '../../mqtt-ca.pem')),
-        })
+        this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken)
 
         // setup mqtt event handlers
         this.ttnClient.on('connect', () => this.logger.log(`connected to TTN app '${applicationID}'`))

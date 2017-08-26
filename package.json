@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
+    "start:docker": "docker run -ti noerw/ttn-ogcswe-integration",
     "start:dev": "env $(cat .env | grep -v ^# | xargs) node --inspect dist/index.js",
     "build": "rimraf dist && tsc -p . || true",
     "build:watch": "rimraf dist && tsc -p . -w || true",
@@ -41,7 +42,7 @@
     "js-yaml": "^3.9.0",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
-    "ttn": "^2.1.2",
+    "ttn": "git://github.com/noerw/node-app-sdk.git#dist",
     "vm2": "^3.4.6"
   }
 }

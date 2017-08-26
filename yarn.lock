@@ -1701,10 +1701,11 @@ tsutils@^2.5.0, tsutils@^2.5.1:
   dependencies:
     tslib "^1.7.1"
 
-ttn@^2.1.2:
+"ttn@git://github.com/noerw/node-app-sdk.git#dist":
   version "2.1.2"
-  resolved "https://registry.yarnpkg.com/ttn/-/ttn-2.1.2.tgz#d79d41cf0ffc50f0e1cead2a554bb2ca5c42ba6c"
+  resolved "git://github.com/noerw/node-app-sdk.git#2886a4acbbba391530b8791fc22d79652f5e4222"
   dependencies:
+    "@types/node" "^8.0.7"
     babel-runtime "^6.23.0"
     http-errors "^1.5.1"
     isomorphic-fetch "^2.2.1"
