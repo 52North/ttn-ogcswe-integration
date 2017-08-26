@@ -1,0 +1,13 @@
+{
+    "generalConfig" : {
+        "width": "800",
+        "height": "500",
+        "language" : "de",
+        "grid" : true,
+        "generalize" : false
+    },
+    "phenomenonStyles": [
+    ],
+    "timeseriesStyles": [
+    ]
+}

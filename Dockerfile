@@ -1,18 +1,12 @@
 FROM node:6-alpine
 
-RUN apk --no-cache --virtual .build add python make g++ git ca-certificates
+RUN apk --no-cache --virtual .build add python make g++ git ca-certificates \
+    && mkdir -p /usr/src/app
 
-# taken from node:6-onbuild
-RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+COPY . /usr/src/app/
 
-COPY package.json /usr/src/app/
-COPY yarn.lock /usr/src/app/
-RUN yarn install --pure-lockfile
-COPY . /usr/src/app
-
-RUN apk del .build
-
-ENV TTN_MQTT_CERT /app/mqtt-ca.pem
+RUN yarn install --pure-lockfile \
+    && apk del .build
 
 CMD [ "npm", "start" ]

@@ -1,10 +1,13 @@
 .git
 .gitignore
 Dockerfile
-LICENSE
+docker
+doc
 README.*
 .env*
 config.yml.sample
 .DS_Store
 .vscode
+index.ts
 tsconfig.json
+tslint.json

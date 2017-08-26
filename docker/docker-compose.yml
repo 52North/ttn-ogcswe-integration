@@ -1,0 +1,30 @@
+version: '2'
+services:
+  ttn-integration:
+    #build: ..                            # you can build from source, or..
+    image: noerw/ttn-ogcswe-integration   # pull the image instead.
+    # if you pull the image, you need your custom config.yml in this directory!
+    volumes:
+      - ./config.yml:/usr/src/app/config.yml
+    depends_on:
+      - sos
+
+  sos:
+    build: ./sos               # SOS from source
+    #image: 52north/sos:4.4.0  # official SOS image
+    ports:
+      - 8080:8080
+    environment:
+      - SOS_REPO=https://github.com/SeBaDro/SOS
+      - SOS_BRANCH=feature/mqtt
+    depends_on:
+      - postgres
+
+  postgres:
+    image: mdillon/postgis:9.5
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sos
