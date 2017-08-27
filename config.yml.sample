@@ -1,19 +1,50 @@
-- ttn:
-    accessToken: token for the applicationID with messages permission
-    applicationID: your appID (not appeui!)
+# Each array element defines one bridge instance.
+# Define a new bridge for each sensor configuration (differing by encoding or observed property).
+# You can also send the same observations to multiple backends, just copy the configuration and change `broker.host`
+
+-
+  ttn:
+    # Token for the `applicationID`. Requires the scopes `messages`, `settings`
+    accessToken: ttn-account-v2.J4vfm..........................
+    # The app_id you registered at TTN
+    applicationID: sos-example-integration
+    # TTN handler region (eu, us-west, asia, ...)
     region: eu
+
   broker:
+    # The type of backend API to use. supported APIs:
+    #   - SOS:transactional     Transactional API must be enabled in SOS!
+    #   - SOS:mqtt              more efficient, must be configured, requires development version of 52N SOS
     type: SOS:transactional
+    # Backend options, dependend on `broker.type`
     options:
+      #### For SOS:transactional
+      # URL to the SOS deployment with
       host: http://localhost:8080/52n-sos-webapp
-      token: optional access token
+      # Optional access token
+      token: super-secure-token
+
+      #### For SOS:mqtt
+      # no options, must be manually configured via SOS admin interface
+
+  # Defines metadata & decoders for the observations that the sensor will transmit.
+  # The order must be the same as transmitted in the LoRa message format!
   sensors:
-  - observedPropertyName: Bird Count
+  -
+    # Display name of the observed property
+    observedPropertyName: Air Temperature
+    # Definition of the observed property if available
+    observedProperty: http://sweet.jpl.nasa.gov/2.2/quanTemperature.owl#Temperature
+    # Unit of measurement associated to `observedProperty`
+    unitOfMeasurement: Cel
+    # Amount of bytes to consume for this observation in the LoRa message
+    bytes: 2
+    # Defines a function to decode the masked bytes of a LoRa Message into the observed value.
+    # Must be a valid JavaScript expression, can access the raw message through the bytes[] array.
+    # If omitted, the bytes are interpreted as little endian integer (LSB first)
+    transformer: bytes[0] + bytes[1] * 256
+  -
+    observedPropertyName: Bird Count
     observedProperty: BirdCount
     unitOfMeasurement: Count
     bytes: 1
-  - observedPropertyName: Air Temperature
-    observedProperty: http://sweet.jpl.nasa.gov/2.2/quanTemperature.owl#Temperature
-    unitOfMeasurement: Cel
-    bytes: 2
-    transformer: bytes[0] + bytes[1] * 256
