@@ -12,7 +12,10 @@ export interface IResponse {
   request: RequestMethod
   service: ServiceType
   version: ServiceVersion
-  exceptions?: object[]
+  exceptions?: [{
+    code: string
+    text: any,
+  }]
 }
 
 export interface IGetCapabilitiesResponse extends IResponse {

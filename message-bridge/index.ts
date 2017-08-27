@@ -48,7 +48,7 @@ export class TTNMessageBridge {
 
       this.logger.log('message submitted')
     } catch (err) {
-      this.logger.error(`could not handle message: ${JSON.stringify(err, null, 2)}`)
+      this.logger.error(`could not handle message: ${err.message}`)
     }
   }
 }

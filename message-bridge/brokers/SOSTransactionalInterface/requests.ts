@@ -47,9 +47,9 @@ class Request {
 
   private responseTransformer(body: IResponse, response: r.FullResponse, resolveWithFullResponse: boolean) {
     if (body.exceptions && response.statusCode >= 400) {
-      // exception text comes as json string, make it readable
+      // exception text comes as json string (not always!), make it readable
       for (const ex of body.exceptions) {
-        try { ex.text = JSON.parse(ex.text) } catch (err) {}
+        try { ex.text = JSON.parse(ex.text) } catch (err) { return }
       }
     }
 
