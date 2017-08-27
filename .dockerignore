@@ -9,6 +9,4 @@ config.yml
 config.yml.sample
 .DS_Store
 .vscode
-index.ts
-tsconfig.json
 tslint.json

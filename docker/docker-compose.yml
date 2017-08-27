@@ -9,6 +9,8 @@ services:
     volumes:
       - ./Caddyfile:/etc/Caddyfile
       - ./.caddy-certs:/root/.caddy
+    depends_on:
+      - sos
 
   ttn-integration:
     #build: ..                            # you can build from source, or..
@@ -18,11 +20,12 @@ services:
       - ./config.yml:/usr/src/app/config.yml
     depends_on:
       - sos
+    restart: always
 
   sos:
     #build: ./sos              # SOS from source
-    image: noerw/sos:mqtt      # hosted SOS from source
-    #image: 52north/sos:4.4.0  # official SOS image
+    #image: noerw/sos:mqtt     # hosted SOS from source
+    image: 52north/sos:4.3.8   # official SOS image
     ports:
       - 8080:8080
     environment:
@@ -30,6 +33,7 @@ services:
       - SOS_BRANCH=feature/mqtt
     depends_on:
       - postgres
+    restart: always
 
   postgres:
     image: mdillon/postgis:9.5
@@ -39,3 +43,4 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=sos
+    restart: always

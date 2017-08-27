@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app/
 
 RUN yarn install --pure-lockfile \
+    && yarn build \
     && apk del .build
 
 CMD [ "npm", "start" ]
