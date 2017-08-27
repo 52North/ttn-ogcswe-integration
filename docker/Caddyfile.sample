@@ -1,0 +1,5 @@
+example.com
+
+tls mail@example.com
+
+proxy / sos:8080/52n-sos-webapp/

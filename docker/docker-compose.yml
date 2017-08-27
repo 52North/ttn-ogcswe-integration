@@ -1,5 +1,15 @@
 version: '2'
 services:
+  # proxies the sos with Lets Encrypt TLS
+  proxy:
+    image: abiosoft/caddy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Caddyfile:/etc/Caddyfile
+      - ./.caddy-certs:/root/.caddy
+
   ttn-integration:
     #build: ..                            # you can build from source, or..
     image: noerw/ttn-ogcswe-integration   # pull the image instead.
@@ -10,12 +20,13 @@ services:
       - sos
 
   sos:
-    build: ./sos               # SOS from source
+    #build: ./sos              # SOS from source
+    image: noerw/sos:mqtt      # hosted SOS from source
     #image: 52north/sos:4.4.0  # official SOS image
     ports:
       - 8080:8080
     environment:
-      - SOS_REPO=https://github.com/SeBaDro/SOS
+      - SOS_REPO=https://github.com/SeBaDro/SOS # only for building from source
       - SOS_BRANCH=feature/mqtt
     depends_on:
       - postgres

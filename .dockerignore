@@ -5,6 +5,7 @@ docker
 doc
 README.*
 .env*
+config.yml
 config.yml.sample
 .DS_Store
 .vscode
