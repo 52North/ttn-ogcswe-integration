@@ -1,7 +1,7 @@
 import * as ttn from 'ttn'
 
 import { IBridgeOptions, ITTNMessageBroker } from '.'
-import { TTNPayloadFunctionManager } from './TTNPayloadFunctionManager'
+import { TTNPayloadFunctionManager } from '../TTNPayloadFunctionManager'
 
 export class SOSMQTTMessageBroker implements ITTNMessageBroker {
 

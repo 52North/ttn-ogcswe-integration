@@ -9,7 +9,7 @@ import {
   SOSTransactionalInterface,
   types,
 } from './SOSTransactionalInterface'
-import { TTNPayloadFunctionManager } from './TTNPayloadFunctionManager'
+import { TTNPayloadFunctionManager } from '../TTNPayloadFunctionManager'
 
 export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 
@@ -85,7 +85,7 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
       const sensorPayload = this.makeInsertSensorPayload(ttnMsg)
       await this.sos.insertSensor(sensorPayload)
       await this.fetchSensors() // TODO: do this without another fetch?
-      return this.sensorCache.find(findByID)
+      return this.sensorCache.find(findByID) // FIXME: no result?!
     } catch (err) {
       throw new Error(`could not get corresponding sensor for dev_id '${ttnMsg.dev_id}': ${err}`)
     }

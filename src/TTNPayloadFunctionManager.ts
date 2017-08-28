@@ -3,7 +3,7 @@ import * as handlebars from 'handlebars'
 import * as ttn from 'ttn'
 import { VM } from 'vm2'
 
-import { IBridgeOptions } from '../BridgeOptions'
+import { IBridgeOptions } from './BridgeOptions'
 
 /**
  * generates payloadfunctions from templates and submits them to TTN

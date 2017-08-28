@@ -8,15 +8,16 @@ This guide explains the steps necessary to deploy a sensor that transmits its ob
 4. [The Sensor](#the-sensor)
 
 ## Introduction
-LoRaWAN is a rather new radio communications protocol providing high transmission range (up to 20 km) at low bandwith (3 - 300 kbps).
+LoRaWAN is a rather new radio communications protocol providing high transmission range (up to 20 km) at low energy usage and bandwith (3 - 300 kbps).
 Devices send messages, hoping that a gateway will receive it.
 
-Because the used frequencies are in unlicensed bands, there are multiple competing networks that provide gateways and the backend infrastructure required to deduplicate these messages and translate them into a TCP/IP network, the web.
+Because the used frequencies are in unlicensed bands, there are multiple competing networks that provide gateways and the backend infrastructure that is required to deduplicate these messages and translate them into a TCP/IP network; the web.
 [TheThingsNetwork](https://thethingsnetwork.org) (TTN) is one implementation of such a network. It's special because the whole software is FOSS, and the gateway deployments are community driven: Anybody can deploy a gateway and link it to the network, which gives the infrastructure arbitrary geographic coverage.
 
 To send and receive messages, devices must be registered in TTN. External applications (the SOS in our case) can then subscribe to these messages from an MQTT broker.
 
 Because the SOS does not provide a way to subscribe to a MQTT broker to insert observations but uses a REST API ('Transactional API'), there is a bridge required.
+This bridge additionally automates tasks such as sensor registration & message decoder definition, removing administrative overhead.
 
 ![System Architecture Diagram](system_architecture.png)
 
@@ -44,35 +45,31 @@ This means that there's no need to register a device twice in both TTN and SOS. 
 
 ## TheThingsNetwork registration
 Create an account at <https://account.thethingsnetwork.org/register> to register the phyisical device and the integration as application in TTN.
-In TTN a *Device* always belongs to an *Application*. An application is just a logical construct to manage access control and message decoders.
+> In TTN a *Device* always belongs to an *Application*. An application is just a logical construct to manage access control and message decoders.
 
-- Application
+### Application
+1. First we register a new application in TTN at <https://console.thethingsnetwork.org/applications/add>.
+Choose an *Application ID* & *Handler* and note the values.
+2. Next add a new *Access Key* to this application specifically for the ttn-ogcswe-integration at `https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/settings/access-keys/add`.
+Give it the right to change *settings* and read *messages*. Note the key somewhere.
+    > This step is technically not required but good security practice.
 
-    1. First we register a new application in TTN at <https://console.thethingsnetwork.org/applications/add>.
-    Choose an *Application ID* & *Handler* and note the values.
-
-    2. Next add a new *Access Key* to this application specifically for the ttn-ogcswe-integration at <https://console.thethingsnetwork.org/applications/testeteste/settings/access-keys/add>.
-    Give it the right to change *settings* and read *messages*. Note the key somewhere.
-        > This step is technically not required but good security practice.
-
-- Device
-
-    3. Add a new device to the application at <https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/devices/register>.
-
-    4. Only if you *don't* know what you're doing: Set the *Activation Method* to `ABP` at <https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/devices/<YOUR-DEVICE-ID>> and note the resultung *Device Address*, *Network Session Key*, *App Session Key*.
-
-    5. Make sure the device has the geographic location of its deployment defined at <https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/devices/<YOUR-DEVICE-ID>/settings/location>
+### Device
+3. Add a new device to the application at `https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/devices/register`.
+4. Only if you *don't* know what you're doing: Set the *Activation Method* to `ABP` at `https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/devices/<YOUR-DEVICE-ID>` and note the resulting *Device Address*, *Network Session Key*, *App Session Key*.
+5. Make sure the device has the geographic location of its deployment defined at `https://console.thethingsnetwork.org/applications/<YOUR-APP-ID>/devices/<YOUR-DEVICE-ID>/settings/location`.
 
 ## Setting up the ttn-ogcswe-integration
 The integration can set up one or more bridges to local or remote OGC SWE storage backends.
 Multiple backend APIs are supported, but in this guide we will use the SOS Transcational API.
 The bridge is configured through a single YAML file (`config.yml`).
+Please refer to the configuration template for an explanation of each option.
 
 1. Follow the [installation instructions](https://github.com/noerw/ttn-ogcswe-integration)
 2. Configure the Integration through `config.yml`
-    - Insert the *Application ID* and *Access Key* in `config.yml`
+    - Insert the *Application ID* and *Access Key*
     - Set `broker.type` to `SOS:transactional`
-    - Set the sensor's observed properties
+    - Set the sensor's observed properties in `sensors`
 3. Make shure the Transactional API is enabled in the SOS admin panel, and Transactional Security is configured correctly.
 4. Launch it!
 

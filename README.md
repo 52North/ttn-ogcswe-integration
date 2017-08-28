@@ -17,7 +17,7 @@ This project was developed in the course of [52°North's Student Innovation Chal
 - Scales well for multiple sensor types & storage backends
 
 ## Setup guide
-For a comprehensive guide of setting up a LoRa connected sensor that submits data into the 52North SOS, see [`HOWTO.md`](./doc/HOWTO.md).
+For a comprehensive guide of setting up a LoRa connected sensor that submits data into the 52North SOS, see [`doc/HOWTO.md`](./doc/HOWTO.md).
 
 ## Installation & Configuration
 
@@ -25,10 +25,10 @@ For a comprehensive guide of setting up a LoRa connected sensor that submits dat
 Depending on your environment, deployment with docker is most straightforward. Please refer to the [Docker setup guide](./docker/README.md).
 
 ### Native installation
-Requires `node >= v6.x` and `yarn`. To install, run `yarn install && yarn build`.
+Requires `node >= v6.x` and `yarn`.
 
 ```sh
-# get the source
+# get the source (alternatively get the zipball)
 git clone https://github.com/noerw/ttn-ogcswe-integration
 cd ttn-ogcswe-integration
 
@@ -44,7 +44,7 @@ yarn start
 ```
 
 ### Configuration
-The integration is configured through a single YAML file, `./config.yml`. The code includes a configuration template at `./config.yml.sample` which explains all possible options.
+The integration is configured through a single YAML file, `config.yml`. The code includes a configuration template at `config.yml.sample` which explains all possible options.
 
 The file can define one or an array of bridge configurations. To define another bridge, just paste another configuration block as defined in `config.yml.sample`. This allows many sensor configurations, or sending messages to multiple backends.
 

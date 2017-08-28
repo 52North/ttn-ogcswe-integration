@@ -10,8 +10,6 @@
     "build": "rimraf dist && tsc -p . || true",
     "build:watch": "rimraf dist && tsc -p . -w || true",
     "build:docker": "npm run build && docker build -t noerw/ttn-ogcswe-integration .",
-    "dev:dist": "npm run build && npm run start:dev",
-    "dev:src": "nodemon --ignore node_modules --ignore dist --exec npm run dev:dist",
     "lint": "tslint --fix '{{message-bridge,device-bridge,types}/**/,./}*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
