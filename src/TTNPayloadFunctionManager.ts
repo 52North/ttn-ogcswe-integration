@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import * as handlebars from 'handlebars'
-import * as ttn from 'ttn'
+import { application as ttnClient, types as ttn } from 'ttn'
 import { VM } from 'vm2'
 
 import { IBridgeOptions } from './BridgeOptions'
@@ -18,9 +18,9 @@ interface IPayloadFunctions<T> {
 }
 
 export class TTNPayloadFunctionManager {
+  private ttnClient: ttn.ApplicationClient
   private readonly bridgeOpts: IBridgeOptions
   private readonly templates: IPayloadFunctions<HandlebarsTemplateDelegate> = {}
-  private readonly ttnManager: ttn.manager.HTTP
 
   constructor(bridgeOpts: IBridgeOptions, templatePaths: IPayloadFunctions<string>) {
     this.bridgeOpts = bridgeOpts
@@ -29,31 +29,18 @@ export class TTNPayloadFunctionManager {
     for (const func in templatePaths) {
       this.templates[func] = handlebars.compile(readFileSync(templatePaths[func], 'utf8'))
     }
-
-    this.ttnManager = new ttn.manager.HTTP({
-      key: this.bridgeOpts.ttn.accessToken,
-      region: this.bridgeOpts.ttn.region,
-    })
   }
 
   public async setPayloadFunctions(): Promise<any> {
     const functions = this.generatePayloadFunctions()
 
-    const app: ttn.manager.Application = await this.ttnManager
-      .getApplication(this.bridgeOpts.ttn.applicationID)
-
-    let changes = false
-    for (const func in functions) {
-      if (app[func] !== functions[func]) {
-        app[func] = functions[func]
-        changes = true
-      }
+    if (!this.ttnClient) {
+      const { applicationID, accessToken } = this.bridgeOpts.ttn
+      this.ttnClient = await ttnClient(applicationID, accessToken)
     }
 
-    return changes
-      ? this.ttnManager.setApplication(this.bridgeOpts.ttn.applicationID, app)
-      : Promise.resolve()
-
+    return this.ttnClient.devices()
+    //return this.ttnClient.setCustomPayloadFunctions(functions)
   }
 
   private generatePayloadFunctions(): IPayloadFunctions<string> {

@@ -8,8 +8,6 @@
     accessToken: ttn-account-v2.J4vfm..........................
     # The app_id you registered at TTN
     applicationID: sos-example-integration
-    # TTN handler region (eu, us-west, asia, ...)
-    region: eu
 
   broker:
     # The type of backend API to use. supported APIs:

@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs'
 import * as handlebars from 'handlebars'
-import * as ttn from 'ttn'
+import { types as ttn} from 'ttn'
 
 import { IBridgeOptions, ITTNMessageBroker } from '.'
 import {
@@ -179,7 +179,7 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
  * specialisation of TTNMessage with specific payload fields structure for this backend
  * the TTN application needs a payload function returning this format!
  */
-interface ITTNMessageOM extends ttn.data.IUplinkMessage {
+interface ITTNMessageOM extends ttn.IUplinkMessage {
   payload_fields: {
     [k: string]: types.IResultMeasurement,
   }

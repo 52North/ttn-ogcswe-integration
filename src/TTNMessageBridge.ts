@@ -1,18 +1,19 @@
+import { types as ttn } from 'ttn'
 import { join } from 'path'
-import * as ttn from 'ttn'
+import { data as ttnClient } from 'ttn'
 
 import { IBridgeOptions } from './BridgeOptions'
 import { ITTNMessageBroker, messageBroker } from './brokers'
 
 export class TTNMessageBridge {
 
-  private ttnClient: ttn.data.MQTT
+  private ttnClient: ttn.DataClient
   private readonly broker: ITTNMessageBroker
   private readonly logger: Console
   private readonly bridgeOptions: IBridgeOptions
 
   constructor(bridgeOptions: IBridgeOptions) {
-    const { region, applicationID, accessToken } = bridgeOptions.ttn
+    const { applicationID, accessToken } = bridgeOptions.ttn
 
     this.bridgeOptions = bridgeOptions
     this.logger = bridgeOptions.logger || console
@@ -29,16 +30,16 @@ export class TTNMessageBridge {
         this.logger.log('backend broker initialized')
 
         // init ttn mqtt connection
-        this.ttnClient = new ttn.data.MQTT(region, applicationID, accessToken)
-
-        // setup mqtt event handlers
-        this.ttnClient.on('connect', () => this.logger.log(`connected to TTN app '${applicationID}'`))
-        this.ttnClient.on('error', this.logger.error)
-        this.ttnClient.on('message', this.handleTTNMessage.bind(this))
+        ttnClient(applicationID, accessToken).then((client: ttn.DataClient) => {
+          this.ttnClient = client
+          this.ttnClient.on('connect', () => this.logger.log(`connected to TTN app '${applicationID}'`))
+          this.ttnClient.on('error', this.logger.error)
+          this.ttnClient.on('uplink', this.handleTTNMessage.bind(this))
+        })
       })
   }
 
-  private async handleTTNMessage(deviceID: string, message: ttn.data.IUplinkMessage) {
+  private async handleTTNMessage(deviceID: string, message: any) {
     try {
       this.logger.log(`parsing message from device '${deviceID}'`)
       const brokerMsg = await this.broker.createMessage(message)

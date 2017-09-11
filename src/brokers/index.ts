@@ -1,4 +1,3 @@
-import * as ttn from 'ttn'
 import { IBridgeOptions } from '../BridgeOptions'
 import { SOSMQTTMessageBroker } from './SOSMQTTMessageBroker'
 import { SOSTransactionalMessageBroker } from './SOSTransactionalMessageBroker'
@@ -9,7 +8,7 @@ export { IBridgeOptions } // export for classes implementing ITTNMessageBroker
 // interface to be implemented by any backend measurement broker instance
 export interface ITTNMessageBroker {
   init(): Promise<any>
-  createMessage(ttnMsg: ttn.data.IUplinkMessage): Promise<any>
+  createMessage(ttnMsg: any): Promise<any> // FIXME: message typings
   submitMessage(message: any): Promise<any>
 }
 

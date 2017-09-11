@@ -1,5 +1,4 @@
-import * as ttn from 'ttn'
-
+import { types as ttn } from 'ttn'
 import { IBridgeOptions, ITTNMessageBroker } from '.'
 import { TTNPayloadFunctionManager } from '../TTNPayloadFunctionManager'
 
@@ -28,7 +27,7 @@ export class SOSMQTTMessageBroker implements ITTNMessageBroker {
     // TODO: subscribe the SOS MQTT client to the TTN MQTT broker
   }
 
-  public async createMessage(ttnMsg: ttn.data.IUplinkMessage): Promise<any> {
+  public async createMessage(ttnMsg: ttn.IUplinkMessage): Promise<any> {
     // nothing todo here, the SOS should be subscribed to the messages itself
     this.logger.log(ttnMsg)
     return

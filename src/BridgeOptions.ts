@@ -9,7 +9,6 @@ const TTNOptions = t.intersection([
   t.interface({
     accessToken: t.string,
     applicationID: t.string,
-    region: t.string,
   }),
   t.partial({ options: t.interface({ ca: t.string }) }),
 ])
