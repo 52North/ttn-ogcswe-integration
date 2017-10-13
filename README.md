@@ -50,7 +50,7 @@ The file can define one or an array of bridge configurations. To define another 
 
 ## Development
 For instructions on how to set up the dev environment & the development workflow,
-please refer to `doc/DEVELOP.md`.
+please refer to [`doc/DEVELOP.md`](./doc/DEVELOP.md).
 
 ## License
 MIT - Norwin Roosen
