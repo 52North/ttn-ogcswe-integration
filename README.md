@@ -16,7 +16,7 @@ This project was developed in the course of [52°North's Student Innovation Chal
 - Simple declarative bridge definition via YAML configuration file
 - Scales well for multiple sensor types & storage backends
 
-## Setup guide
+## User Setup guide
 For a comprehensive guide of setting up a LoRa connected sensor that submits data into the 52North SOS, see [`doc/HOWTO.md`](./doc/HOWTO.md).
 
 ## Installation & Configuration
@@ -47,6 +47,10 @@ yarn start
 The integration is configured through a single YAML file, `config.yml`. The code includes a configuration template at `config.yml.sample` which explains all possible options.
 
 The file can define one or an array of bridge configurations. To define another bridge, just paste another configuration block as defined in `config.yml.sample`. This allows many sensor configurations, or sending messages to multiple backends.
+
+## Development
+For instructions on how to set up the dev environment & the development workflow,
+please refer to `doc/DEVELOP.md`.
 
 ## License
 MIT - Norwin Roosen

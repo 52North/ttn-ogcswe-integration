@@ -65,10 +65,10 @@ Multiple backend APIs are supported, but in this guide we will use the SOS Trans
 The bridge is configured through a single YAML file (`config.yml`).
 Please refer to the configuration template for an explanation of each option.
 
-1. Follow the [installation instructions](https://github.com/noerw/ttn-ogcswe-integration)
+1. Follow the [installation instructions](https://github.com/noerw/ttn-ogcswe-integration#installation--configuration)
 2. Configure the Integration through `config.yml`
     - Insert the *Application ID* and *Access Key*
-    - Set `broker.type` to `SOS:transactional`
+    - Set `broker.type` to `SOS:transactional`, and `broker.options.host` to your SOS address.
     - Set the sensor's observed properties in `sensors`
 3. Make shure the Transactional API is enabled in the SOS admin panel, and Transactional Security is configured correctly.
 4. Launch it!
