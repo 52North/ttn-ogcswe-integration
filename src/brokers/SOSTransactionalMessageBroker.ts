@@ -157,10 +157,10 @@ export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
   private makeInsertSensorPayload(ttnMsg: ITTNMessageOM): InsertSensorParams {
     // generate SensorML from template
     const procedureDescription = this.sensorTemplate({
-      ALTITUDE: ttnMsg.altitude,
+      ALTITUDE: ttnMsg.metadata.altitude,
       HOST: this.bridgeOpts.broker.options.host,
-      LATITUDE: ttnMsg.latitude,
-      LONGITUDE: ttnMsg.longitude,
+      LATITUDE: ttnMsg.metadata.latitude,
+      LONGITUDE: ttnMsg.metadata.longitude,
       SENSORS: this.bridgeOpts.sensors,
       SENSOR_ID: `${this.sensorIdPrefix}${ttnMsg.dev_id}`,
     }).replace(/\s+/g, ' ') // deflate whitespace
