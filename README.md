@@ -29,7 +29,7 @@ Requires `node >= v6.x` and `yarn`.
 
 ```sh
 # get the source (alternatively get the zipball)
-git clone https://github.com/noerw/ttn-ogcswe-integration
+git clone https://github.com/52North/ttn-ogcswe-integration
 cd ttn-ogcswe-integration
 
 # install dependencies & transpile typescript

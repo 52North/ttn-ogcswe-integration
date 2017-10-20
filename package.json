@@ -10,19 +10,19 @@
     "build": "rimraf dist && tsc -p . || true",
     "build:watch": "rimraf dist && tsc -p . -w || true",
     "build:docker": "npm run build && docker build -t noerw/ttn-ogcswe-integration .",
-    "lint": "tslint --fix '{{message-bridge,device-bridge,types}/**/,./}*.ts'",
+    "lint": "tslint --fix './src/**/*.ts'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/noerw/ttn-ogcswe-integration.git"
+    "url": "git://github.com/52North/ttn-ogcswe-integration.git"
   },
-  "author": "Norwin Roosen <noerw@gmx.de>",
+  "author": "Norwin Roosen <52north@nroo.de>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/noerw/ttn-ogcswe-integration/issues"
+    "url": "https://github.com/52North/ttn-ogcswe-integration/issues"
   },
-  "homepage": "https://github.com/noerw/ttn-ogcswe-integration#readme",
+  "homepage": "https://github.com/52North/ttn-ogcswe-integration#readme",
   "devDependencies": {
     "@types/handlebars": "^4.0.34",
     "@types/js-yaml": "^3.9.0",
