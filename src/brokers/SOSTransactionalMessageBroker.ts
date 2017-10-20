@@ -1,15 +1,15 @@
 import { readFileSync } from 'fs'
 import * as handlebars from 'handlebars'
-import { types as ttn} from 'ttn'
+import { types as ttn } from 'ttn'
 
 import { IBridgeOptions, ITTNMessageBroker } from '.'
+import { TTNPayloadFunctionManager } from '../TTNPayloadFunctionManager'
 import {
   InsertObservationParams,
   InsertSensorParams,
   SOSTransactionalInterface,
   types,
 } from './SOSTransactionalInterface'
-import { TTNPayloadFunctionManager } from '../TTNPayloadFunctionManager'
 
 export class SOSTransactionalMessageBroker implements ITTNMessageBroker {
 

@@ -1,6 +1,5 @@
-import { types as ttn } from 'ttn'
 import { join } from 'path'
-import { data as ttnClient } from 'ttn'
+import { data as ttnClient, types as ttn } from 'ttn'
 
 import { IBridgeOptions } from './BridgeOptions'
 import { ITTNMessageBroker, messageBroker } from './brokers'

@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs'
 import { safeLoad } from 'js-yaml'
 
-import { TTNMessageBridge } from './TTNMessageBridge'
 import { IBridgeOptions, validate } from './BridgeOptions'
+import { TTNMessageBridge } from './TTNMessageBridge'
 
 // load, parse & validate the bridge definitions
 let bridgeOptions: IBridgeOptions[]

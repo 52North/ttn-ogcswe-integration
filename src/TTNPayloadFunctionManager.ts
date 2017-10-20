@@ -39,8 +39,7 @@ export class TTNPayloadFunctionManager {
       this.ttnClient = await ttnClient(applicationID, accessToken)
     }
 
-    return this.ttnClient.devices()
-    //return this.ttnClient.setCustomPayloadFunctions(functions)
+    return this.ttnClient.setCustomPayloadFunctions(functions)
   }
 
   private generatePayloadFunctions(): IPayloadFunctions<string> {
