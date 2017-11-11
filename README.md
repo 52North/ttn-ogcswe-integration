@@ -4,6 +4,8 @@ This is a node.js based integration between [The Things Network](https://thethin
 Specifically the SOS is implemented as storage backend. Building on a modular architecture, support for more backends is planned.
 Besides measurement upload, the goal is to manage devices in both platforms consistently by automatically registering or updating them in the counterpart platform.
 
+![architecture diagram](doc/system_architecture.png)
+
 This project was developed in the course of [52°North's Student Innovation Challenge](http://52north.org/about/other-activities/student-innovation-prize) 2017 against the [SOS implementation by 52°North](https://github.com/52north/SOS).
 
 ## Features
