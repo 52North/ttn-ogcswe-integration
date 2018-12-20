@@ -26,20 +26,20 @@
   "devDependencies": {
     "@types/handlebars": "^4.0.34",
     "@types/js-yaml": "^3.9.0",
-    "@types/node": "^8.0.7",
+    "@types/node": "^10.12.18",
     "@types/request-promise-native": "^1.0.5",
     "rimraf": "^2.6.1",
     "tslint": "^5.5.0",
     "tslint-consistent-codestyle": "^1.5.0",
-    "typescript": "^2.4.1"
+    "typescript": "^3.2.2"
   },
   "dependencies": {
-    "handlebars": "^4.0.10",
-    "io-ts": "^0.6.0",
-    "js-yaml": "^3.9.0",
-    "request": "^2.81.0",
-    "request-promise-native": "^1.0.4",
-    "ttn": "^2.2.5",
-    "vm2": "^3.4.6"
+    "handlebars": "^4.0.12",
+    "io-ts": "^1.5.1",
+    "js-yaml": "^3.12.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5",
+    "ttn": "^2.3.1",
+    "vm2": "^3.6.4"
   }
 }

@@ -68,20 +68,20 @@ declare module 'ttn' {
       on(message: 'connect', handler: (connack: object) => void): this
 
       on(message: DataEvent,
-                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): void
+                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): this
       on(message: DataEvent, devID: string,
-                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): void
+                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): this
       on(message: DataEvent, devID: string, event: DeviceEvent,
-                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): void
+                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): this
 
       off(message: DataEvent,
-                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): void
+                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): this
       off(message: DataEvent, devID: string,
-                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): void
+                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): this
       off(message: DataEvent, devID: string, event: DeviceEvent,
-                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): void
+                handler: (devID: string, data: types.IActivationMessage | types.IDownlinkMessage) => void): this
 
-      send(devID: string, payload: Buffer | any[] | object, port?: number, confirmed?: boolean): void
+      send(devID: string, payload: Buffer | any[] | object, port?: number, confirmed?: boolean): this
     }
 
     type DataEvent =

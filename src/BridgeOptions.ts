@@ -11,18 +11,18 @@ const TTNOptions = t.intersection([
     applicationID: t.string,
   }),
   t.partial({ options: t.interface({ ca: t.string }) }),
-])
+], 'TTNOptions')
 
-const BrokerType = t.union([
-  t.literal('SOS:transactional'),
-  t.literal('SOS:mqtt'),
-  // t.literal('SensorThings:mqtt'),
-])
+const BrokerType = t.keyof({
+  'SOS:transactional': null,
+  'SOS:mqtt': null,
+  // 'SensorThings:mqtt': null,
+}, 'BrokerType')
 
 const BrokerOptions = t.intersection([
     t.interface({ type: BrokerType }),
-    t.partial({ options: t.Dictionary }),
-])
+    t.partial({ options: t.dictionary(t.string, t.string) }),
+], 'BrokerOptions')
 
 const Sensor = t.intersection([
   t.interface({
@@ -32,7 +32,7 @@ const Sensor = t.intersection([
     unitOfMeasurement: t.string,
   }),
   t.partial({ transformer: t.string }), // proper validation of the JS string happens when parsing
-])
+], 'SensorDefinition')
 
 const BridgeOptions = t.intersection([
   t.interface({
@@ -43,7 +43,7 @@ const BridgeOptions = t.intersection([
   t.partial({
     logger: t.any,
   }),
-])
+], 'BridgeOptions')
 
 // infer the static TS type from the runtime type
 export type IBridgeOptions = t.TypeOf<typeof BridgeOptions>
@@ -54,6 +54,6 @@ export type ISensorDefinition = t.TypeOf<typeof Sensor>
  * @param data the options object to validate
  */
 export function validate(data: object): void {
-  const validation = t.validate(data, BridgeOptions)
+  const validation = BridgeOptions.decode(data)
   ThrowReporter.report(validation)
 }

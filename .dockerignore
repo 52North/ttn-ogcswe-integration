@@ -1,9 +1,11 @@
 .git
 .gitignore
+dist
 Dockerfile
 docker
 doc
 README.*
+node_modules
 .env*
 config.yml
 config.yml.sample

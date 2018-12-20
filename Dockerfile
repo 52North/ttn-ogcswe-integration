@@ -1,4 +1,4 @@
-FROM node:6-alpine
+FROM node:10-alpine
 
 RUN apk --no-cache --virtual .build add python make g++ git ca-certificates \
     && mkdir -p /usr/src/app

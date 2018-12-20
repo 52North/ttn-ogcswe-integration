@@ -27,7 +27,7 @@ For a comprehensive guide of setting up a LoRa connected sensor that submits dat
 Depending on your environment, deployment with docker is most straightforward. Please refer to the [Docker setup guide](./docker/README.md).
 
 ### Native installation
-Requires `node >= v6.x` and `yarn`.
+Requires `node v10.x` and `yarn`.
 
 ```sh
 # get the source (alternatively get the zipball)
