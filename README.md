@@ -1,3 +1,7 @@
+# ARCHIVED
+
+This project is no longer maintained and will not receive any further updates. If you plan to continue using it, please be aware that future security issues will not be addressed.
+
 # The Things Network -- OGC SensorWeb Integration
 
 This is a node.js based integration between [The Things Network](https://thethingsnetwork.org) (TTN) and the OGC SensorWeb, providing seamless measurement upload from LoRaWAN connected sensors into OGC infrastructure.
